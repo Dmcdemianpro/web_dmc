@@ -1,36 +1,112 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# DMC Projects Spa - Sitio Web
 
-## Getting Started
+Sitio web corporativo para DMC Projects Spa con dos areas de negocio:
+- **Salud Digital**: Interoperabilidad e integracion de sistemas clinicos (HL7, FHIR, Mirth Connect)
+- **Personalizacion Textil**: Impresion DTF profesional en poleras, polerones y uniformes
 
-First, run the development server:
+## Tecnologias
+
+- **Framework**: Next.js 16 con App Router
+- **Estilos**: Tailwind CSS
+- **Animaciones**: Framer Motion
+- **Lenguaje**: TypeScript
+- **Estado**: React Context API
+
+## Requisitos
+
+- Node.js 18+
+- npm o yarn
+
+## Instalacion
 
 ```bash
+# Clonar el repositorio
+git clone https://github.com/Dmcdemianpro/web_dmc.git
+
+# Entrar al directorio
+cd web_dmc
+
+# Instalar dependencias
+npm install
+
+# Ejecutar en desarrollo
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+El sitio estara disponible en [http://localhost:3000](http://localhost:3000)
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Estructura del Proyecto
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```
+src/
+├── app/
+│   ├── page.tsx              # Pagina de bienvenida (selector)
+│   ├── salud/                # Seccion Salud Digital
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── components/
+│   ├── textil/               # Seccion Personalizacion Textil
+│   │   ├── layout.tsx
+│   │   ├── page.tsx
+│   │   └── components/
+│   ├── admin/                # Panel de administracion
+│   │   └── page.tsx
+│   └── contacto/             # Pagina de contacto
+├── components/               # Componentes compartidos
+├── context/                  # Context providers
+│   └── ContentContext.tsx    # Manejo de contenido editable
+└── lib/                      # Utilidades
+    └── utils.ts              # WhatsApp, contacto, etc.
+```
 
-## Learn More
+## Panel de Administracion
 
-To learn more about Next.js, take a look at the following resources:
+Accede al panel de administracion en `/admin`
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+**Credenciales por defecto:**
+- Usuario: `admin`
+- Contrasena: `dmc2024`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Desde el panel puedes editar:
+- Informacion general del sitio
+- Pagina de bienvenida
+- Contenido de Hero sections
+- Servicios de Salud Digital
+- Servicios de Textil DTF
+- Galeria de imagenes (Textil)
+- Informacion de contacto
 
-## Deploy on Vercel
+## Rutas Principales
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+| Ruta | Descripcion |
+|------|-------------|
+| `/` | Pagina de bienvenida con selector |
+| `/salud` | Seccion Salud Digital |
+| `/textil` | Seccion Personalizacion Textil |
+| `/admin` | Panel de administracion |
+| `/contacto` | Formulario de contacto |
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Contacto
+
+- **WhatsApp**: +56 9 4228 7787
+- **Email**: contacto@dmcprojects.cl
+
+## Scripts Disponibles
+
+```bash
+npm run dev      # Desarrollo
+npm run build    # Compilar para produccion
+npm run start    # Ejecutar build de produccion
+npm run lint     # Verificar codigo
+```
+
+## Despliegue
+
+El proyecto esta optimizado para desplegar en:
+- Vercel (recomendado)
+- Netlify
+- Cualquier servidor con soporte Node.js
+
+## Licencia
+
+Todos los derechos reservados - DMC Projects Spa

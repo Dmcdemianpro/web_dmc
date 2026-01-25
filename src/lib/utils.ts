@@ -5,7 +5,7 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs));
 }
 
-export const WHATSAPP_NUMBER = "56912345678"; // PLACEHOLDER - Reemplazar con número real
+export const WHATSAPP_NUMBER = "56942287787";
 
 export const WHATSAPP_MESSAGES = {
   salud: encodeURIComponent(
@@ -27,10 +27,10 @@ export function getWhatsAppLink(message: keyof typeof WHATSAPP_MESSAGES = "gener
 }
 
 export const CONTACT_INFO = {
-  phone: "+56 9 1234 5678", // PLACEHOLDER
-  email: "contacto@dmcprojects.cl", // PLACEHOLDER
-  address: "Santiago, Chile", // PLACEHOLDER
+  phone: "+56 9 4228 7787",
+  email: "contacto@dmcprojects.cl",
+  address: "Santiago, Chile",
   schedule: "Lunes a Viernes, 9:00 - 18:00",
-  instagram: "https://instagram.com/dmcprojects", // PLACEHOLDER
-  linkedin: "https://linkedin.com/company/dmcprojects", // PLACEHOLDER
+  instagram: "https://instagram.com/dmcprojects",
+  linkedin: "https://linkedin.com/company/dmcprojects",
 };

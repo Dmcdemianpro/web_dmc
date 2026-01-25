@@ -2,61 +2,72 @@
 
 import Link from "next/link";
 import { motion } from "framer-motion";
-import { MessageCircle, FileText } from "lucide-react";
-import { Section } from "@/components/ui/section";
-import { Button } from "@/components/ui/button";
+import { MessageCircle, FileText, Sparkles } from "lucide-react";
 import { getWhatsAppLink } from "@/lib/utils";
 
 export function TextilCTA() {
   return (
-    <Section>
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-accent-textil to-accent-textil-dark p-8 md:p-12 text-white text-center"
-      >
-        {/* Decorative */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2" />
-        <div className="absolute bottom-0 left-0 w-64 h-64 bg-white/10 rounded-full blur-3xl translate-y-1/2 -translate-x-1/2" />
+    <section className="theme-textil py-20 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-[#0a0a0a] to-black" />
+      <div className="absolute inset-0 particles-bg" />
 
-        <div className="relative z-10 max-w-2xl mx-auto">
-          <h2 className="text-3xl sm:text-4xl font-bold mb-4">
-            ¿Listo para personalizar?
-          </h2>
-          <p className="text-lg text-white/90 mb-8">
-            Cuéntanos qué necesitas y te enviamos una cotización en menos de 24 horas.
-          </p>
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="relative overflow-hidden rounded-2xl border border-[#ff0040]/30 bg-gradient-to-br from-[#111] to-[#0a0a0a] p-8 md:p-16"
+        >
+          {/* Decorative Elements */}
+          <div className="absolute top-0 right-0 w-80 h-80 bg-[#ff0040]/20 rounded-full blur-[100px] -translate-y-1/2 translate-x-1/2" />
+          <div className="absolute bottom-0 left-0 w-80 h-80 bg-[#ff6600]/20 rounded-full blur-[100px] translate-y-1/2 -translate-x-1/2" />
+          <div className="absolute inset-0 urban-pattern opacity-10" />
 
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
-            <Button
-              size="lg"
-              className="bg-white text-accent-textil hover:bg-white/90"
-              asChild
+          {/* Animated Border */}
+          <div className="absolute inset-0 rounded-2xl animate-border-glow" style={{ border: '1px solid' }} />
+
+          <div className="relative z-10 max-w-3xl mx-auto text-center">
+            {/* Badge */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.9 }}
+              whileInView={{ opacity: 1, scale: 1 }}
+              viewport={{ once: true }}
+              className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[#ff0040]/50 bg-[#ff0040]/10 text-[#ff0040] text-sm font-medium mb-6"
             >
+              <Sparkles className="w-4 h-4" />
+              Cotizacion Gratis
+            </motion.div>
+
+            <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white mb-6">
+              Listo para <span className="text-gradient-neon neon-text">personalizar</span>?
+            </h2>
+
+            <p className="text-lg sm:text-xl text-gray-300 mb-10">
+              Cuentanos que necesitas y te enviamos una cotizacion en menos de <span className="text-[#ff0040] font-bold">24 horas</span>.
+            </p>
+
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <a
                 href={getWhatsAppLink("textilCotizar")}
                 target="_blank"
                 rel="noopener noreferrer"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 bg-gradient-to-r from-[#ff0040] to-[#ff6600] text-white font-bold text-lg rounded-xl transition-all duration-300 hover:scale-105 neon-glow shine-effect"
               >
-                <MessageCircle className="h-5 w-5 mr-2" />
+                <MessageCircle className="h-5 w-5" />
                 Cotizar por WhatsApp
               </a>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-white text-white hover:bg-white/10"
-              asChild
-            >
-              <Link href="/contacto?tema=textil">
-                <FileText className="h-5 w-5 mr-2" />
-                Completar formulario
+              <Link
+                href="/contacto?tema=textil"
+                className="group inline-flex items-center justify-center gap-2 px-8 py-4 border-2 border-white/20 text-white font-bold text-lg rounded-xl transition-all duration-300 hover:border-[#ff0040] hover:bg-[#ff0040]/10"
+              >
+                <FileText className="h-5 w-5" />
+                Completar Formulario
               </Link>
-            </Button>
+            </div>
           </div>
-        </div>
-      </motion.div>
-    </Section>
+        </motion.div>
+      </div>
+    </section>
   );
 }

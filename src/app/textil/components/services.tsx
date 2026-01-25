@@ -1,43 +1,202 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Shirt } from "lucide-react";
-import { Section, SectionHeader } from "@/components/ui/section";
-import { TEXTIL_SERVICES } from "@/lib/constants";
+import { Shirt, Star, ArrowRight, Sparkles } from "lucide-react";
+import Link from "next/link";
+import { getWhatsAppLink } from "@/lib/utils";
+
+const services = [
+  {
+    title: "Poleras Streetwear",
+    description: "Algodon premium, oversize y regular fit. Disenos urbanos, graficos bold y colores vibrantes.",
+    image: "https://images.unsplash.com/photo-1576566588028-4147f3842f27?w=500&q=80",
+    features: ["Oversize", "Full Color", "Urban"]
+  },
+  {
+    title: "Polerones Urban",
+    description: "Hoodies premium con o sin capucha. Estilo streetwear, perfectos para tu crew o marca.",
+    image: "https://images.unsplash.com/photo-1556821840-3a63f95609a7?w=500&q=80",
+    features: ["Hoodie", "Crew", "Premium"]
+  },
+  {
+    title: "Uniformes Corporativos",
+    description: "Polos, camisas y chaquetas con tu identidad. Cotizacion especial por volumen.",
+    image: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?w=500&q=80",
+    features: ["Logo", "Bordado", "Volumen"]
+  },
+  {
+    title: "Gorras & Accesorios",
+    description: "Snapbacks, dad hats, beanies y mas. Complementa tu estilo con accesorios personalizados.",
+    image: "https://images.unsplash.com/photo-1588850561407-ed78c282e89b?w=500&q=80",
+    features: ["Snapback", "Beanie", "Custom"]
+  },
+];
 
 export function TextilServices() {
   return (
-    <Section id="catalogo">
-      <SectionHeader
-        title="Nuestros Servicios"
-        subtitle="Personalizamos todo tipo de prendas con la mejor calidad DTF"
-      />
+    <section id="catalogo" className="theme-textil py-24 relative overflow-hidden">
+      {/* Background */}
+      <div className="absolute inset-0 bg-gradient-to-b from-black via-[#0a0a0a] to-black" />
 
-      <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {TEXTIL_SERVICES.map((service, index) => (
-          <motion.div
-            key={service.title}
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1 }}
-            className="group bg-card rounded-xl border border-border overflow-hidden hover:shadow-lg transition-all duration-300"
-          >
-            {/* Image Placeholder */}
-            <div className="aspect-square bg-gradient-to-br from-accent-textil/20 to-accent-textil/5 relative overflow-hidden">
-              <div className="absolute inset-0 flex items-center justify-center">
-                <Shirt className="h-16 w-16 text-accent-textil/30 group-hover:scale-110 transition-transform duration-300" />
-              </div>
-            </div>
-
-            {/* Content */}
-            <div className="p-6">
-              <h3 className="text-lg font-semibold mb-2">{service.title}</h3>
-              <p className="text-sm text-muted-foreground">{service.description}</p>
-            </div>
-          </motion.div>
-        ))}
+      {/* Animated Background Elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div
+          className="absolute -top-1/2 -left-1/4 w-[800px] h-[800px] rounded-full bg-[#ff0040]/5 blur-[150px]"
+          animate={{
+            scale: [1, 1.2, 1],
+            x: [0, 50, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity }}
+        />
+        <motion.div
+          className="absolute -bottom-1/2 -right-1/4 w-[800px] h-[800px] rounded-full bg-[#ff6600]/5 blur-[150px]"
+          animate={{
+            scale: [1.2, 1, 1.2],
+            x: [0, -50, 0],
+          }}
+          transition={{ duration: 15, repeat: Infinity }}
+        />
       </div>
-    </Section>
+
+      {/* Grid Pattern */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ff004008_1px,transparent_1px),linear-gradient(to_bottom,#ff004008_1px,transparent_1px)] bg-[size:50px_50px]" />
+
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-20"
+        >
+          <motion.span
+            initial={{ scale: 0 }}
+            whileInView={{ scale: 1 }}
+            viewport={{ once: true }}
+            className="inline-flex items-center gap-2 px-5 py-2 rounded-full border border-[#ff0040]/30 bg-[#ff0040]/10 text-[#ff0040] text-sm font-bold mb-6"
+          >
+            <Sparkles className="w-4 h-4" />
+            Catalogo de Productos
+          </motion.span>
+
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-black text-white mb-6">
+            Nuestros{" "}
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#ff0040] to-[#ff6600]">
+              Productos
+            </span>
+          </h2>
+
+          <p className="text-xl text-gray-400 max-w-2xl mx-auto">
+            Personalizamos todo tipo de prendas con tecnologia DTF de ultima generacion
+          </p>
+        </motion.div>
+
+        {/* Services Grid */}
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {services.map((service, index) => (
+            <motion.div
+              key={service.title}
+              initial={{ opacity: 0, y: 50 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: index * 0.1 }}
+              whileHover={{ y: -15 }}
+              className="group relative"
+            >
+              {/* Glow Effect on Hover */}
+              <div className="absolute -inset-0.5 bg-gradient-to-r from-[#ff0040] to-[#ff6600] rounded-2xl blur opacity-0 group-hover:opacity-50 transition-opacity duration-500" />
+
+              <div className="relative bg-[#111] rounded-2xl overflow-hidden border border-white/5 group-hover:border-[#ff0040]/30 transition-all duration-500">
+                {/* Image */}
+                <div className="relative h-64 overflow-hidden">
+                  <motion.img
+                    src={service.image}
+                    alt={service.title}
+                    className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                  />
+
+                  {/* Overlay Gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#111] via-transparent to-transparent" />
+
+                  {/* Features Tags */}
+                  <div className="absolute top-4 left-4 flex flex-wrap gap-2">
+                    {service.features.map((feature, i) => (
+                      <motion.span
+                        key={i}
+                        initial={{ opacity: 0, y: -10 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: index * 0.1 + i * 0.1 }}
+                        className="px-2 py-1 text-xs font-bold bg-black/50 backdrop-blur-sm border border-[#ff0040]/30 text-[#ff0040] rounded"
+                      >
+                        {feature}
+                      </motion.span>
+                    ))}
+                  </div>
+
+                  {/* Hover Icon */}
+                  <motion.div
+                    initial={{ scale: 0, opacity: 0 }}
+                    whileHover={{ scale: 1, opacity: 1 }}
+                    className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-sm opacity-0 group-hover:opacity-100 transition-opacity duration-300"
+                  >
+                    <div className="w-16 h-16 rounded-full bg-gradient-to-r from-[#ff0040] to-[#ff6600] flex items-center justify-center">
+                      <Shirt className="w-8 h-8 text-white" />
+                    </div>
+                  </motion.div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-white mb-2 group-hover:text-[#ff0040] transition-colors">
+                    {service.title}
+                  </h3>
+                  <p className="text-gray-400 text-sm mb-4 line-clamp-2">
+                    {service.description}
+                  </p>
+
+                  {/* CTA */}
+                  <a
+                    href={getWhatsAppLink("textilCotizar")}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="inline-flex items-center gap-2 text-[#ff0040] font-bold text-sm group-hover:gap-3 transition-all"
+                  >
+                    Cotizar ahora
+                    <ArrowRight className="w-4 h-4" />
+                  </a>
+                </div>
+
+                {/* Bottom Accent Line */}
+                <div className="absolute bottom-0 left-0 right-0 h-1 bg-gradient-to-r from-[#ff0040] to-[#ff6600] transform scale-x-0 group-hover:scale-x-100 transition-transform duration-500 origin-left" />
+              </div>
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Bottom CTA */}
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mt-16"
+        >
+          <p className="text-gray-400 mb-6">
+            ¿Tienes un proyecto especial? ¡Te ayudamos a hacerlo realidad!
+          </p>
+          <motion.a
+            href={getWhatsAppLink("textilConsulta")}
+            target="_blank"
+            rel="noopener noreferrer"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            className="inline-flex items-center gap-3 px-10 py-5 bg-gradient-to-r from-[#ff0040] to-[#ff6600] text-white font-bold text-lg rounded-xl transition-all duration-300 hover:shadow-[0_0_40px_rgba(255,0,64,0.4)]"
+          >
+            <Star className="w-5 h-5" />
+            Consulta Personalizada
+          </motion.a>
+        </motion.div>
+      </div>
+    </section>
   );
 }

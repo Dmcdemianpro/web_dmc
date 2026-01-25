@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import { Navbar } from "@/components/layout/navbar";
-import { Footer } from "@/components/layout/footer";
-import { WhatsAppButton } from "@/components/layout/whatsapp-button";
+import { Providers } from "@/components/providers/Providers";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -86,14 +84,11 @@ export default function RootLayout({
   return (
     <html lang="es" className="scroll-smooth">
       <body
-        className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen flex flex-col`}
+        className={`${inter.variable} ${jetbrainsMono.variable} antialiased min-h-screen`}
       >
-        <Navbar />
-        <main id="main-content" className="flex-1 pt-16 md:pt-18">
+        <Providers>
           {children}
-        </main>
-        <Footer />
-        <WhatsAppButton />
+        </Providers>
       </body>
     </html>
   );
