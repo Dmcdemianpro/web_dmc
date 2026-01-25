@@ -26,73 +26,128 @@ export function TextilHero() {
           className="absolute inset-0"
         >
           <img
-            src="https://images.unsplash.com/photo-1523398002811-999ca8dec234?w=1920&q=80"
-            alt="Urban Streetwear Background"
+            src="https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=1920&q=80"
+            alt="Urban Streetwear Store"
             className="w-full h-full object-cover"
           />
         </motion.div>
-        {/* Dark overlay with gradient */}
-        <div className="absolute inset-0 bg-gradient-to-r from-black via-black/95 to-black/80" />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/50 to-black/70" />
-        {/* Additional color tint */}
-        <div className="absolute inset-0 bg-[#ff0040]/5 mix-blend-overlay" />
+        {/* Lighter overlay to show image */}
+        <div className="absolute inset-0 bg-gradient-to-r from-black/90 via-black/70 to-black/50" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black via-transparent to-black/30" />
       </motion.div>
 
-      {/* Urban Pattern Overlay */}
-      <div className="absolute inset-0 -z-10">
-        <div className="absolute inset-0 urban-pattern opacity-40" />
-        {/* Animated Scan Lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(transparent_50%,rgba(0,0,0,0.1)_50%)] bg-[length:100%_4px] pointer-events-none" />
+      {/* Animated Grid Pattern */}
+      <div className="absolute inset-0 opacity-20">
+        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ff004012_1px,transparent_1px),linear-gradient(to_bottom,#ff004012_1px,transparent_1px)] bg-[size:60px_60px]" />
       </div>
 
-      {/* Animated Neon Lines */}
-      <svg className="absolute inset-0 w-full h-full pointer-events-none opacity-30">
+      {/* Animated Neon Lines - Urban Style */}
+      <svg className="absolute inset-0 w-full h-full pointer-events-none">
         <motion.line
           x1="0%"
-          y1="30%"
-          x2="40%"
-          y2="30%"
+          y1="25%"
+          x2="35%"
+          y2="25%"
           stroke="url(#neon-gradient)"
           strokeWidth="2"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.6 }}
           transition={{ duration: 2, repeat: Infinity, repeatType: "reverse" }}
         />
         <motion.line
-          x1="60%"
-          y1="70%"
+          x1="65%"
+          y1="75%"
           x2="100%"
-          y2="70%"
+          y2="75%"
           stroke="url(#neon-gradient)"
           strokeWidth="2"
-          initial={{ pathLength: 0 }}
-          animate={{ pathLength: 1 }}
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.6 }}
           transition={{ duration: 2, delay: 1, repeat: Infinity, repeatType: "reverse" }}
+        />
+        {/* Vertical lines */}
+        <motion.line
+          x1="90%"
+          y1="0%"
+          x2="90%"
+          y2="40%"
+          stroke="url(#neon-gradient-v)"
+          strokeWidth="2"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.4 }}
+          transition={{ duration: 3, delay: 0.5, repeat: Infinity, repeatType: "reverse" }}
+        />
+        <motion.line
+          x1="10%"
+          y1="60%"
+          x2="10%"
+          y2="100%"
+          stroke="url(#neon-gradient-v)"
+          strokeWidth="2"
+          initial={{ pathLength: 0, opacity: 0 }}
+          animate={{ pathLength: 1, opacity: 0.4 }}
+          transition={{ duration: 3, delay: 1.5, repeat: Infinity, repeatType: "reverse" }}
         />
         <defs>
           <linearGradient id="neon-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
             <stop offset="0%" stopColor="#ff0040" />
             <stop offset="100%" stopColor="#ff6600" />
           </linearGradient>
+          <linearGradient id="neon-gradient-v" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0%" stopColor="#ff0040" />
+            <stop offset="100%" stopColor="#ff6600" />
+          </linearGradient>
         </defs>
       </svg>
 
-      {/* Floating Orbs with Glow */}
+      {/* Floating Particles */}
+      {[...Array(15)].map((_, i) => (
+        <motion.div
+          key={i}
+          className="absolute w-2 h-2 bg-[#ff0040]/60 rounded-full"
+          style={{
+            left: `${10 + Math.random() * 80}%`,
+            top: `${10 + Math.random() * 80}%`,
+          }}
+          animate={{
+            y: [0, -40, 0],
+            x: [0, Math.random() * 20 - 10, 0],
+            opacity: [0.2, 0.8, 0.2],
+            scale: [1, 1.5, 1],
+          }}
+          transition={{
+            duration: 4 + Math.random() * 3,
+            repeat: Infinity,
+            delay: Math.random() * 3,
+          }}
+        />
+      ))}
+
+      {/* Large Glowing Orbs */}
       <motion.div
-        className="absolute top-1/4 right-1/4 w-64 h-64 rounded-full bg-[#ff0040]/20 blur-[100px]"
+        className="absolute top-1/4 right-1/4 w-[500px] h-[500px] rounded-full bg-[#ff0040]/30 blur-[150px]"
         animate={{
           scale: [1, 1.3, 1],
-          opacity: [0.3, 0.6, 0.3],
+          opacity: [0.3, 0.5, 0.3],
         }}
-        transition={{ duration: 4, repeat: Infinity }}
+        transition={{ duration: 6, repeat: Infinity }}
       />
       <motion.div
-        className="absolute bottom-1/3 left-1/4 w-80 h-80 rounded-full bg-[#ff6600]/20 blur-[120px]"
+        className="absolute bottom-1/4 left-1/4 w-[400px] h-[400px] rounded-full bg-[#ff6600]/25 blur-[120px]"
         animate={{
           scale: [1.2, 1, 1.2],
           opacity: [0.4, 0.2, 0.4],
         }}
         transition={{ duration: 5, repeat: Infinity }}
+      />
+      <motion.div
+        className="absolute top-1/2 right-1/3 w-[300px] h-[300px] rounded-full bg-[#ff0040]/20 blur-[100px]"
+        animate={{
+          scale: [1, 1.4, 1],
+          x: [0, 50, 0],
+          opacity: [0.2, 0.4, 0.2],
+        }}
+        transition={{ duration: 8, repeat: Infinity }}
       />
 
       {/* Main Content */}
@@ -127,7 +182,7 @@ export function TextilHero() {
               animate={{
                 textShadow: [
                   "0 0 20px rgba(255,0,64,0)",
-                  "0 0 40px rgba(255,0,64,0.5)",
+                  "0 0 60px rgba(255,0,64,0.8)",
                   "0 0 20px rgba(255,0,64,0)"
                 ]
               }}
