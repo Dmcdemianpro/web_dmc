@@ -100,25 +100,37 @@ export function TextilHero() {
         </defs>
       </svg>
 
-      {/* Floating Particles */}
-      {[...Array(15)].map((_, i) => (
+      {/* Floating Particles - Fixed positions to avoid hydration mismatch */}
+      {[
+        { left: "15%", top: "20%", delay: 0, duration: 5 },
+        { left: "25%", top: "60%", delay: 0.5, duration: 6 },
+        { left: "35%", top: "30%", delay: 1, duration: 4.5 },
+        { left: "45%", top: "70%", delay: 1.5, duration: 5.5 },
+        { left: "55%", top: "25%", delay: 2, duration: 6.5 },
+        { left: "65%", top: "55%", delay: 0.3, duration: 5 },
+        { left: "75%", top: "35%", delay: 1.2, duration: 4 },
+        { left: "85%", top: "65%", delay: 2.5, duration: 7 },
+        { left: "20%", top: "45%", delay: 0.8, duration: 5.2 },
+        { left: "40%", top: "80%", delay: 1.8, duration: 6.2 },
+        { left: "60%", top: "15%", delay: 2.2, duration: 4.8 },
+        { left: "80%", top: "50%", delay: 0.2, duration: 5.8 },
+      ].map((particle, i) => (
         <motion.div
           key={i}
           className="absolute w-2 h-2 bg-[#ff0040]/60 rounded-full"
           style={{
-            left: `${10 + Math.random() * 80}%`,
-            top: `${10 + Math.random() * 80}%`,
+            left: particle.left,
+            top: particle.top,
           }}
           animate={{
             y: [0, -40, 0],
-            x: [0, Math.random() * 20 - 10, 0],
             opacity: [0.2, 0.8, 0.2],
             scale: [1, 1.5, 1],
           }}
           transition={{
-            duration: 4 + Math.random() * 3,
+            duration: particle.duration,
             repeat: Infinity,
-            delay: Math.random() * 3,
+            delay: particle.delay,
           }}
         />
       ))}
