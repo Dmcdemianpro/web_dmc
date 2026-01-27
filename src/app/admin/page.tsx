@@ -29,7 +29,7 @@ import {
 
 // Tabs disponibles
 const tabs = [
-  { id: "general", label: "General", icon: LayoutDashboard },
+  { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
   { id: "welcome", label: "Bienvenida", icon: Home },
   { id: "hero", label: "Hero", icon: FileText },
   { id: "salud", label: "Salud", icon: Heart },
@@ -55,10 +55,13 @@ export default function AdminPage() {
     addGalleryItem,
     updateGalleryItem,
     deleteGalleryItem,
+    addPortfolioItem,
+    updatePortfolioItem,
+    deletePortfolioItem,
     resetToDefault,
   } = useContent();
 
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState("dashboard");
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
   const [saveMessage, setSaveMessage] = useState("");
 
@@ -243,12 +246,8 @@ export default function AdminPage() {
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === "general" && (
-                <GeneralTab
-                  content={content}
-                  updateContent={updateContent}
-                  onSave={showSaveMessage}
-                />
+              {activeTab === "dashboard" && (
+                <DashboardTab content={content} />
               )}
               {activeTab === "welcome" && (
                 <WelcomeTab
@@ -287,6 +286,15 @@ export default function AdminPage() {
                   onSave={showSaveMessage}
                 />
               )}
+              {activeTab === "portfolio" && (
+                <PortfolioTab
+                  content={content}
+                  addPortfolioItem={addPortfolioItem}
+                  updatePortfolioItem={updatePortfolioItem}
+                  deletePortfolioItem={deletePortfolioItem}
+                  onSave={showSaveMessage}
+                />
+              )}
               {activeTab === "contact" && (
                 <ContactTab
                   content={content}
@@ -305,46 +313,154 @@ export default function AdminPage() {
   );
 }
 
-// General Tab
-function GeneralTab({ content, updateContent, onSave }: any) {
-  const [siteName, setSiteName] = useState(content.siteName);
-  const [siteTagline, setSiteTagline] = useState(content.siteTagline);
+// Dashboard Tab
+function DashboardTab({ content }: any) {
+  const stats = [
+    {
+      label: "Servicios Salud",
+      value: content.saludServices?.length || 0,
+      icon: Heart,
+      color: "text-green-500",
+      bg: "bg-green-500/10",
+    },
+    {
+      label: "Servicios Textil",
+      value: content.textilServices?.length || 0,
+      icon: Shirt,
+      color: "text-[#ff0040]",
+      bg: "bg-[#ff0040]/10",
+    },
+    {
+      label: "Proyectos Portfolio",
+      value: content.portfolio?.length || 0,
+      icon: FolderOpen,
+      color: "text-blue-500",
+      bg: "bg-blue-500/10",
+    },
+    {
+      label: "Imagenes Galeria",
+      value: content.textilGallery?.length || 0,
+      icon: Camera,
+      color: "text-purple-500",
+      bg: "bg-purple-500/10",
+    },
+  ];
 
-  const handleSave = () => {
-    updateContent("siteName", siteName);
-    updateContent("siteTagline", siteTagline);
-    onSave();
+  const portfolioByType = {
+    salud: content.portfolio?.filter((p: any) => p.type === "salud").length || 0,
+    textil: content.portfolio?.filter((p: any) => p.type === "textil").length || 0,
   };
 
   return (
     <div className="space-y-6">
+      {/* Estadisticas principales */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {stats.map((stat, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.1 }}
+            className="admin-card p-6"
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-sm text-gray-400 mb-1">{stat.label}</p>
+                <p className="text-3xl font-bold text-white">{stat.value}</p>
+              </div>
+              <div className={`w-12 h-12 rounded-xl ${stat.bg} flex items-center justify-center`}>
+                <stat.icon className={`w-6 h-6 ${stat.color}`} />
+              </div>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+
+      {/* Informacion general */}
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="admin-card p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <LayoutDashboard className="w-5 h-5 text-brand" />
+            Informacion del Sitio
+          </h3>
+          <div className="space-y-3">
+            <div className="flex justify-between items-center py-2 border-b border-white/10">
+              <span className="text-gray-400">Nombre:</span>
+              <span className="text-white font-medium">{content.siteName}</span>
+            </div>
+            <div className="flex justify-between items-center py-2 border-b border-white/10">
+              <span className="text-gray-400">Tagline:</span>
+              <span className="text-white font-medium text-sm">{content.siteTagline}</span>
+            </div>
+            <div className="flex justify-between items-center py-2">
+              <span className="text-gray-400">Email:</span>
+              <span className="text-white font-medium text-sm">{content.contact.email}</span>
+            </div>
+          </div>
+        </div>
+
+        <div className="admin-card p-6">
+          <h3 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+            <FolderOpen className="w-5 h-5 text-brand" />
+            Portfolio por Tipo
+          </h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-green-500/10 flex items-center justify-center">
+                  <Heart className="w-5 h-5 text-green-500" />
+                </div>
+                <span className="text-white">Salud Digital</span>
+              </div>
+              <span className="text-2xl font-bold text-white">{portfolioByType.salud}</span>
+            </div>
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-[#ff0040]/10 flex items-center justify-center">
+                  <Shirt className="w-5 h-5 text-[#ff0040]" />
+                </div>
+                <span className="text-white">Textil DTF</span>
+              </div>
+              <span className="text-2xl font-bold text-white">{portfolioByType.textil}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Accesos rapidos */}
       <div className="admin-card p-6">
-        <h3 className="text-lg font-semibold text-white mb-6">Informacion General</h3>
-
-        <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-400 mb-2">Nombre del Sitio</label>
-            <input
-              type="text"
-              value={siteName}
-              onChange={(e) => setSiteName(e.target.value)}
-              className="admin-input w-full"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm text-gray-400 mb-2">Tagline</label>
-            <input
-              type="text"
-              value={siteTagline}
-              onChange={(e) => setSiteTagline(e.target.value)}
-              className="admin-input w-full"
-            />
-          </div>
-
-          <button onClick={handleSave} className="admin-btn">
-            <Save size={18} className="inline mr-2" />
-            Guardar Cambios
+        <h3 className="text-lg font-semibold text-white mb-4">Accesos Rapidos</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <a
+            href="/"
+            target="_blank"
+            className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
+          >
+            <Eye className="w-6 h-6 text-brand" />
+            <span className="text-sm text-white">Ver Sitio</span>
+          </a>
+          <a
+            href="/salud"
+            target="_blank"
+            className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
+          >
+            <Heart className="w-6 h-6 text-green-500" />
+            <span className="text-sm text-white">Salud</span>
+          </a>
+          <a
+            href="/textil"
+            target="_blank"
+            className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
+          >
+            <Shirt className="w-6 h-6 text-[#ff0040]" />
+            <span className="text-sm text-white">Textil</span>
+          </a>
+          <button
+            onClick={() => window.location.reload()}
+            className="flex flex-col items-center gap-2 p-4 rounded-lg bg-white/5 hover:bg-white/10 transition-colors text-center"
+          >
+            <RotateCcw className="w-6 h-6 text-gray-400" />
+            <span className="text-sm text-white">Recargar</span>
           </button>
         </div>
       </div>
@@ -1063,6 +1179,385 @@ function GalleryTab({ content, addGalleryItem, updateGalleryItem, deleteGalleryI
           <strong className="text-[#ff0040]">Tip:</strong> Puedes usar URLs de servicios como Unsplash, Imgur, o cualquier URL de imagen publica.
           Las imagenes se mostraran en la galeria de la seccion Textil.
         </p>
+      </div>
+    </div>
+  );
+}
+
+// Portfolio Tab
+function PortfolioTab({ content, addPortfolioItem, updatePortfolioItem, deletePortfolioItem, onSave }: any) {
+  const [isAdding, setIsAdding] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
+
+  // Form state para nuevo item
+  const [newItem, setNewItem] = useState({
+    title: "",
+    description: "",
+    type: "salud" as "salud" | "textil",
+    image: "",
+    tags: "",
+  });
+
+  // Form state para editar
+  const [editItem, setEditItem] = useState({
+    title: "",
+    description: "",
+    type: "salud" as "salud" | "textil",
+    image: "",
+    tags: "",
+  });
+
+  const handleAdd = () => {
+    if (newItem.title.trim() && newItem.description.trim() && newItem.image.trim()) {
+      addPortfolioItem({
+        title: newItem.title.trim(),
+        description: newItem.description.trim(),
+        type: newItem.type,
+        image: newItem.image.trim(),
+        tags: newItem.tags.split(",").map(t => t.trim()).filter(t => t),
+      });
+      setNewItem({ title: "", description: "", type: "salud", image: "", tags: "" });
+      setIsAdding(false);
+      onSave();
+    }
+  };
+
+  const handleStartEdit = (item: any) => {
+    setEditingId(item.id);
+    setEditItem({
+      title: item.title,
+      description: item.description,
+      type: item.type,
+      image: item.image,
+      tags: item.tags.join(", "),
+    });
+  };
+
+  const handleSaveEdit = () => {
+    if (editingId && editItem.title.trim() && editItem.description.trim() && editItem.image.trim()) {
+      updatePortfolioItem(editingId, {
+        title: editItem.title.trim(),
+        description: editItem.description.trim(),
+        type: editItem.type,
+        image: editItem.image.trim(),
+        tags: editItem.tags.split(",").map(t => t.trim()).filter(t => t),
+      });
+      setEditingId(null);
+      onSave();
+    }
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Eliminar este proyecto del portfolio?")) {
+      deletePortfolioItem(id);
+      onSave();
+    }
+  };
+
+  const portfolioSalud = content.portfolio?.filter((p: any) => p.type === "salud") || [];
+  const portfolioTextil = content.portfolio?.filter((p: any) => p.type === "textil") || [];
+
+  return (
+    <div className="space-y-6">
+      {/* Boton agregar */}
+      <div className="flex justify-between items-center">
+        <div>
+          <h3 className="text-xl font-bold text-white">Proyectos Portfolio</h3>
+          <p className="text-sm text-gray-400 mt-1">
+            Gestiona los proyectos destacados de ambas secciones
+          </p>
+        </div>
+        <button
+          onClick={() => setIsAdding(!isAdding)}
+          className={`admin-btn ${isAdding ? "bg-red-500/20 text-red-500" : ""}`}
+        >
+          {isAdding ? <X size={18} className="inline mr-2" /> : <Plus size={18} className="inline mr-2" />}
+          {isAdding ? "Cancelar" : "Nuevo Proyecto"}
+        </button>
+      </div>
+
+      {/* Formulario nuevo proyecto */}
+      <AnimatePresence>
+        {isAdding && (
+          <motion.div
+            initial={{ opacity: 0, height: 0 }}
+            animate={{ opacity: 1, height: "auto" }}
+            exit={{ opacity: 0, height: 0 }}
+            className="admin-card p-6 border-brand/30"
+          >
+            <h4 className="text-lg font-semibold text-white mb-4">Nuevo Proyecto</h4>
+            <div className="grid md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Titulo *</label>
+                <input
+                  type="text"
+                  value={newItem.title}
+                  onChange={(e) => setNewItem({ ...newItem, title: e.target.value })}
+                  className="admin-input w-full"
+                  placeholder="Integracion HIS-LIS"
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Tipo *</label>
+                <select
+                  value={newItem.type}
+                  onChange={(e) => setNewItem({ ...newItem, type: e.target.value as any })}
+                  className="admin-input w-full"
+                >
+                  <option value="salud">Salud Digital</option>
+                  <option value="textil">Textil DTF</option>
+                </select>
+              </div>
+              <div className="md:col-span-2">
+                <label className="block text-sm text-gray-400 mb-2">Descripcion *</label>
+                <textarea
+                  value={newItem.description}
+                  onChange={(e) => setNewItem({ ...newItem, description: e.target.value })}
+                  className="admin-input w-full h-20 resize-none"
+                  placeholder="Descripcion del proyecto..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">URL Imagen *</label>
+                <input
+                  type="url"
+                  value={newItem.image}
+                  onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
+                  className="admin-input w-full"
+                  placeholder="https://..."
+                />
+              </div>
+              <div>
+                <label className="block text-sm text-gray-400 mb-2">Tags (separados por coma)</label>
+                <input
+                  type="text"
+                  value={newItem.tags}
+                  onChange={(e) => setNewItem({ ...newItem, tags: e.target.value })}
+                  className="admin-input w-full"
+                  placeholder="HL7, Mirth Connect, HIS"
+                />
+              </div>
+            </div>
+            <div className="flex gap-3 mt-4">
+              <button onClick={handleAdd} className="admin-btn">
+                <Save size={18} className="inline mr-2" />
+                Guardar Proyecto
+              </button>
+              <button
+                onClick={() => setIsAdding(false)}
+                className="px-4 py-2 rounded-lg bg-white/5 text-gray-400 hover:bg-white/10 transition-colors"
+              >
+                Cancelar
+              </button>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Proyectos Salud Digital */}
+      <div className="admin-card p-6">
+        <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Heart className="w-5 h-5 text-green-500" />
+          Proyectos Salud Digital ({portfolioSalud.length})
+        </h4>
+        <div className="grid md:grid-cols-2 gap-4">
+          {portfolioSalud.map((item: any) => (
+            <div key={item.id} className="relative group bg-white/5 rounded-lg overflow-hidden border border-white/10">
+              {editingId === item.id ? (
+                <div className="p-4 space-y-3">
+                  <input
+                    type="text"
+                    value={editItem.title}
+                    onChange={(e) => setEditItem({ ...editItem, title: e.target.value })}
+                    className="admin-input w-full text-sm"
+                    placeholder="Titulo"
+                  />
+                  <textarea
+                    value={editItem.description}
+                    onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                    className="admin-input w-full text-sm h-16 resize-none"
+                    placeholder="Descripcion"
+                  />
+                  <input
+                    type="url"
+                    value={editItem.image}
+                    onChange={(e) => setEditItem({ ...editItem, image: e.target.value })}
+                    className="admin-input w-full text-sm"
+                    placeholder="URL Imagen"
+                  />
+                  <input
+                    type="text"
+                    value={editItem.tags}
+                    onChange={(e) => setEditItem({ ...editItem, tags: e.target.value })}
+                    className="admin-input w-full text-sm"
+                    placeholder="Tags (separados por coma)"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveEdit}
+                      className="flex-1 px-3 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 text-sm"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="flex-1 px-3 py-2 bg-gray-500/20 text-gray-400 rounded-lg hover:bg-gray-500/30 text-sm"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="aspect-video relative">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Error';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleStartEdit(item)}
+                        className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-green-500"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-red-500"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h5 className="text-white font-semibold mb-1">{item.title}</h5>
+                    <p className="text-gray-400 text-sm mb-3 line-clamp-2">{item.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags?.map((tag: string, i: number) => (
+                        <span key={i} className="px-2 py-1 bg-green-500/10 text-green-500 text-xs rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+        {portfolioSalud.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>No hay proyectos de Salud Digital</p>
+          </div>
+        )}
+      </div>
+
+      {/* Proyectos Textil DTF */}
+      <div className="admin-card p-6">
+        <h4 className="text-lg font-semibold text-white mb-4 flex items-center gap-2">
+          <Shirt className="w-5 h-5 text-[#ff0040]" />
+          Proyectos Textil DTF ({portfolioTextil.length})
+        </h4>
+        <div className="grid md:grid-cols-2 gap-4">
+          {portfolioTextil.map((item: any) => (
+            <div key={item.id} className="relative group bg-white/5 rounded-lg overflow-hidden border border-white/10">
+              {editingId === item.id ? (
+                <div className="p-4 space-y-3">
+                  <input
+                    type="text"
+                    value={editItem.title}
+                    onChange={(e) => setEditItem({ ...editItem, title: e.target.value })}
+                    className="admin-input w-full text-sm"
+                    placeholder="Titulo"
+                  />
+                  <textarea
+                    value={editItem.description}
+                    onChange={(e) => setEditItem({ ...editItem, description: e.target.value })}
+                    className="admin-input w-full text-sm h-16 resize-none"
+                    placeholder="Descripcion"
+                  />
+                  <input
+                    type="url"
+                    value={editItem.image}
+                    onChange={(e) => setEditItem({ ...editItem, image: e.target.value })}
+                    className="admin-input w-full text-sm"
+                    placeholder="URL Imagen"
+                  />
+                  <input
+                    type="text"
+                    value={editItem.tags}
+                    onChange={(e) => setEditItem({ ...editItem, tags: e.target.value })}
+                    className="admin-input w-full text-sm"
+                    placeholder="Tags (separados por coma)"
+                  />
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleSaveEdit}
+                      className="flex-1 px-3 py-2 bg-green-500/20 text-green-500 rounded-lg hover:bg-green-500/30 text-sm"
+                    >
+                      Guardar
+                    </button>
+                    <button
+                      onClick={() => setEditingId(null)}
+                      className="flex-1 px-3 py-2 bg-gray-500/20 text-gray-400 rounded-lg hover:bg-gray-500/30 text-sm"
+                    >
+                      Cancelar
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="aspect-video relative">
+                    <img
+                      src={item.image}
+                      alt={item.title}
+                      className="w-full h-full object-cover"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Error';
+                      }}
+                    />
+                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
+                      <button
+                        onClick={() => handleStartEdit(item)}
+                        className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-[#ff0040]"
+                      >
+                        <Edit2 size={18} />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(item.id)}
+                        className="w-10 h-10 bg-white/20 rounded-full flex items-center justify-center text-white hover:bg-red-500"
+                      >
+                        <Trash2 size={18} />
+                      </button>
+                    </div>
+                  </div>
+                  <div className="p-4">
+                    <h5 className="text-white font-semibold mb-1">{item.title}</h5>
+                    <p className="text-gray-400 text-sm mb-3 line-clamp-2">{item.description}</p>
+                    <div className="flex flex-wrap gap-2">
+                      {item.tags?.map((tag: string, i: number) => (
+                        <span key={i} className="px-2 py-1 bg-[#ff0040]/10 text-[#ff0040] text-xs rounded">
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          ))}
+        </div>
+        {portfolioTextil.length === 0 && (
+          <div className="text-center py-8 text-gray-500">
+            <FolderOpen className="w-12 h-12 mx-auto mb-3 opacity-50" />
+            <p>No hay proyectos de Textil DTF</p>
+          </div>
+        )}
       </div>
     </div>
   );
