@@ -25,11 +25,15 @@ import {
   Home,
   Image,
   Camera,
+  Palette,
+  Upload,
+  Type,
 } from "lucide-react";
 
 // Tabs disponibles
 const tabs = [
   { id: "dashboard", label: "Dashboard", icon: LayoutDashboard },
+  { id: "design", label: "Diseño", icon: Palette },
   { id: "welcome", label: "Bienvenida", icon: Home },
   { id: "hero", label: "Hero", icon: FileText },
   { id: "salud", label: "Salud", icon: Heart },
@@ -52,6 +56,7 @@ export default function AdminPage() {
     updateTextilHero,
     updateContact,
     updateWelcome,
+    updateDesign,
     addGalleryItem,
     updateGalleryItem,
     deleteGalleryItem,
@@ -248,6 +253,13 @@ export default function AdminPage() {
             >
               {activeTab === "dashboard" && (
                 <DashboardTab content={content} />
+              )}
+              {activeTab === "design" && (
+                <DesignTab
+                  content={content}
+                  updateDesign={updateDesign}
+                  onSave={showSaveMessage}
+                />
               )}
               {activeTab === "welcome" && (
                 <WelcomeTab
@@ -464,6 +476,285 @@ function DashboardTab({ content }: any) {
           </button>
         </div>
       </div>
+    </div>
+  );
+}
+
+// Design Tab
+function DesignTab({ content, updateDesign, onSave }: any) {
+  const [design, setDesign] = useState(content.design || {
+    logo: '/logo.png',
+    fontFamily: 'Inter',
+    primaryColor: '#3b82f6',
+    secondaryColor: '#10b981',
+    accentColor: '#ff0040',
+  });
+
+  const handleSave = () => {
+    updateDesign(design);
+    onSave();
+    // Aplicar cambios inmediatamente
+    applyDesignChanges(design);
+  };
+
+  const applyDesignChanges = (designData: any) => {
+    // Aplicar fuente
+    document.documentElement.style.setProperty('--font-family', designData.fontFamily);
+
+    // Aplicar colores
+    document.documentElement.style.setProperty('--color-primary', designData.primaryColor);
+    document.documentElement.style.setProperty('--color-secondary', designData.secondaryColor);
+    document.documentElement.style.setProperty('--color-accent', designData.accentColor);
+  };
+
+  const fontOptions = [
+    { value: 'Inter', label: 'Inter (Default)' },
+    { value: 'Poppins', label: 'Poppins' },
+    { value: 'Montserrat', label: 'Montserrat' },
+    { value: 'Roboto', label: 'Roboto' },
+    { value: 'Open Sans', label: 'Open Sans' },
+    { value: 'Lato', label: 'Lato' },
+    { value: 'Raleway', label: 'Raleway' },
+    { value: 'Playfair Display', label: 'Playfair Display' },
+  ];
+
+  return (
+    <div className="space-y-6">
+      {/* Logo */}
+      <div className="admin-card p-6">
+        <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+          <Upload className="w-5 h-5 text-brand" />
+          Logo del Sitio
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">URL del Logo</label>
+            <input
+              type="url"
+              value={design.logo}
+              onChange={(e) => setDesign({ ...design, logo: e.target.value })}
+              className="admin-input w-full"
+              placeholder="https://... o /logo.png"
+            />
+            <p className="text-xs text-gray-500 mt-1">
+              Puedes usar una URL externa o subir el logo a /public/logo.png
+            </p>
+          </div>
+
+          {/* Vista previa del logo */}
+          <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+            <p className="text-sm text-gray-400 mb-3">Vista Previa:</p>
+            <div className="bg-white/10 p-6 rounded-lg flex items-center justify-center">
+              {design.logo ? (
+                <img
+                  src={design.logo}
+                  alt="Logo preview"
+                  className="max-h-16 max-w-full object-contain"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x60?text=Logo';
+                  }}
+                />
+              ) : (
+                <p className="text-gray-500 text-sm">Sin logo</p>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Tipografia */}
+      <div className="admin-card p-6">
+        <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+          <Type className="w-5 h-5 text-brand" />
+          Tipografia
+        </h3>
+        <div className="space-y-4">
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Fuente Principal</label>
+            <select
+              value={design.fontFamily}
+              onChange={(e) => setDesign({ ...design, fontFamily: e.target.value })}
+              className="admin-input w-full"
+            >
+              {fontOptions.map(font => (
+                <option key={font.value} value={font.value}>
+                  {font.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Vista previa de la fuente */}
+          <div className="p-4 bg-white/5 rounded-lg border border-white/10">
+            <p className="text-sm text-gray-400 mb-3">Vista Previa:</p>
+            <div className="space-y-2">
+              <p className="text-2xl text-white" style={{ fontFamily: design.fontFamily }}>
+                DMC Projects
+              </p>
+              <p className="text-base text-gray-400" style={{ fontFamily: design.fontFamily }}>
+                Conectamos sistemas de salud e imprimimos tu identidad
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Colores */}
+      <div className="admin-card p-6">
+        <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
+          <Palette className="w-5 h-5 text-brand" />
+          Esquema de Colores
+        </h3>
+        <div className="grid md:grid-cols-3 gap-6">
+          {/* Color Primario */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Color Primario</label>
+            <div className="flex gap-3">
+              <input
+                type="color"
+                value={design.primaryColor}
+                onChange={(e) => setDesign({ ...design, primaryColor: e.target.value })}
+                className="w-16 h-12 rounded-lg border border-white/20 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={design.primaryColor}
+                onChange={(e) => setDesign({ ...design, primaryColor: e.target.value })}
+                className="admin-input flex-1"
+                placeholder="#3b82f6"
+              />
+            </div>
+            <div className="mt-2 p-3 rounded-lg" style={{ backgroundColor: design.primaryColor }}>
+              <p className="text-white text-sm font-medium">Ejemplo de texto</p>
+            </div>
+          </div>
+
+          {/* Color Secundario */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Color Secundario (Salud)</label>
+            <div className="flex gap-3">
+              <input
+                type="color"
+                value={design.secondaryColor}
+                onChange={(e) => setDesign({ ...design, secondaryColor: e.target.value })}
+                className="w-16 h-12 rounded-lg border border-white/20 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={design.secondaryColor}
+                onChange={(e) => setDesign({ ...design, secondaryColor: e.target.value })}
+                className="admin-input flex-1"
+                placeholder="#10b981"
+              />
+            </div>
+            <div className="mt-2 p-3 rounded-lg" style={{ backgroundColor: design.secondaryColor }}>
+              <p className="text-white text-sm font-medium">Ejemplo de texto</p>
+            </div>
+          </div>
+
+          {/* Color Acento */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">Color Acento (Textil)</label>
+            <div className="flex gap-3">
+              <input
+                type="color"
+                value={design.accentColor}
+                onChange={(e) => setDesign({ ...design, accentColor: e.target.value })}
+                className="w-16 h-12 rounded-lg border border-white/20 cursor-pointer"
+              />
+              <input
+                type="text"
+                value={design.accentColor}
+                onChange={(e) => setDesign({ ...design, accentColor: e.target.value })}
+                className="admin-input flex-1"
+                placeholder="#ff0040"
+              />
+            </div>
+            <div className="mt-2 p-3 rounded-lg" style={{ backgroundColor: design.accentColor }}>
+              <p className="text-white text-sm font-medium">Ejemplo de texto</p>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Presets de colores */}
+      <div className="admin-card p-6">
+        <h3 className="text-lg font-semibold text-white mb-4">Esquemas Predefinidos</h3>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <button
+            onClick={() => setDesign({
+              ...design,
+              primaryColor: '#3b82f6',
+              secondaryColor: '#10b981',
+              accentColor: '#ff0040',
+            })}
+            className="p-4 rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+          >
+            <div className="flex gap-2 mb-2">
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#3b82f6' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#10b981' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#ff0040' }}></div>
+            </div>
+            <p className="text-white text-sm">Default</p>
+          </button>
+
+          <button
+            onClick={() => setDesign({
+              ...design,
+              primaryColor: '#8b5cf6',
+              secondaryColor: '#06b6d4',
+              accentColor: '#f59e0b',
+            })}
+            className="p-4 rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+          >
+            <div className="flex gap-2 mb-2">
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#8b5cf6' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#06b6d4' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#f59e0b' }}></div>
+            </div>
+            <p className="text-white text-sm">Moderno</p>
+          </button>
+
+          <button
+            onClick={() => setDesign({
+              ...design,
+              primaryColor: '#0ea5e9',
+              secondaryColor: '#22c55e',
+              accentColor: '#ef4444',
+            })}
+            className="p-4 rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+          >
+            <div className="flex gap-2 mb-2">
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#0ea5e9' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#22c55e' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#ef4444' }}></div>
+            </div>
+            <p className="text-white text-sm">Vibrante</p>
+          </button>
+
+          <button
+            onClick={() => setDesign({
+              ...design,
+              primaryColor: '#6366f1',
+              secondaryColor: '#14b8a6',
+              accentColor: '#ec4899',
+            })}
+            className="p-4 rounded-lg border border-white/10 hover:border-white/30 transition-colors"
+          >
+            <div className="flex gap-2 mb-2">
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#6366f1' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#14b8a6' }}></div>
+              <div className="w-full h-8 rounded" style={{ backgroundColor: '#ec4899' }}></div>
+            </div>
+            <p className="text-white text-sm">Neon</p>
+          </button>
+        </div>
+      </div>
+
+      <button onClick={handleSave} className="admin-btn">
+        <Save size={18} className="inline mr-2" />
+        Guardar Cambios de Diseño
+      </button>
     </div>
   );
 }

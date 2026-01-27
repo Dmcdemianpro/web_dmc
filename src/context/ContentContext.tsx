@@ -73,6 +73,15 @@ interface SiteContent {
   siteName: string
   siteTagline: string
 
+  // Diseño
+  design: {
+    logo: string
+    fontFamily: string
+    primaryColor: string
+    secondaryColor: string
+    accentColor: string
+  }
+
   // Selector de Bienvenida
   welcome: WelcomeSelector
 
@@ -115,6 +124,15 @@ const defaultContent: SiteContent = {
   // General
   siteName: 'DMC Projects',
   siteTagline: 'Conectamos sistemas de salud e imprimimos tu identidad',
+
+  // Diseño
+  design: {
+    logo: '/logo.png',
+    fontFamily: 'Inter',
+    primaryColor: '#3b82f6',
+    secondaryColor: '#10b981',
+    accentColor: '#ff0040',
+  },
 
   // Selector de Bienvenida
   welcome: {
@@ -241,6 +259,7 @@ interface ContentContextType {
   updateTextilHero: (data: Partial<HeroContent>) => void
   updateContact: (data: Partial<ContactInfo>) => void
   updateWelcome: (data: Partial<WelcomeSelector>) => void
+  updateDesign: (data: Partial<SiteContent['design']>) => void
   addService: (type: 'salud' | 'textil', service: Omit<ServiceItem, 'id'>) => void
   updateService: (type: 'salud' | 'textil', id: number, data: Partial<ServiceItem>) => void
   deleteService: (type: 'salud' | 'textil', id: number) => void
@@ -284,6 +303,19 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('dmcContent', JSON.stringify(content))
   }, [content])
 
+  // Aplicar estilos de diseño cuando cambien
+  useEffect(() => {
+    if (typeof window !== 'undefined' && content.design) {
+      // Aplicar fuente
+      document.documentElement.style.setProperty('--font-family', content.design.fontFamily)
+
+      // Aplicar colores como CSS variables
+      document.documentElement.style.setProperty('--color-primary', content.design.primaryColor)
+      document.documentElement.style.setProperty('--color-secondary', content.design.secondaryColor)
+      document.documentElement.style.setProperty('--color-accent', content.design.accentColor)
+    }
+  }, [content.design])
+
   // Funciones de autenticacion
   const login = (username: string, password: string) => {
     if (username === ADMIN_CREDENTIALS.username && password === ADMIN_CREDENTIALS.password) {
@@ -322,6 +354,10 @@ export function ContentProvider({ children }: { children: ReactNode }) {
 
   const updateWelcome = (data: Partial<WelcomeSelector>) => {
     setContent(prev => ({ ...prev, welcome: { ...prev.welcome, ...data } }))
+  }
+
+  const updateDesign = (data: Partial<SiteContent['design']>) => {
+    setContent(prev => ({ ...prev, design: { ...prev.design, ...data } }))
   }
 
   // Servicios
@@ -412,6 +448,7 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     updateTextilHero,
     updateContact,
     updateWelcome,
+    updateDesign,
     addService,
     updateService,
     deleteService,

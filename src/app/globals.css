@@ -1,10 +1,25 @@
 @import "tailwindcss";
 
+/* Google Fonts - Importadas dinámicamente según selección */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Raleway:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800;900&display=swap');
+
 /* ================================
    DMC PROJECTS - DESIGN SYSTEM
    ================================ */
 
 :root {
+  /* Variables de diseño personalizables */
+  --font-family: 'Inter', sans-serif;
+  --color-primary: #3b82f6;
+  --color-secondary: #10b981;
+  --color-accent: #ff0040;
   /* Base Colors - Light Mode */
   --background: #ffffff;
   --foreground: #0a0a0a;
@@ -129,7 +144,7 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  font-family: var(--font-family), system-ui, -apple-system, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
