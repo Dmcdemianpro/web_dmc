@@ -528,7 +528,7 @@ function DesignTab({ content, updateDesign, onSave }: any) {
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">URL del Logo</label>
+            <label className="block text-sm text-gray-400 mb-2">URL del Logo/Ícono</label>
             <input
               type="url"
               value={design.logo}
@@ -537,27 +537,51 @@ function DesignTab({ content, updateDesign, onSave }: any) {
               placeholder="https://... o /logo.png"
             />
             <p className="text-xs text-gray-500 mt-1">
-              Puedes usar una URL externa o subir el logo a /public/logo.png
+              💡 Puedes usar una URL externa o subir el logo a /public/logo.png
+            </p>
+            <p className="text-xs text-gray-500 mt-1">
+              Formato recomendado: PNG transparente de 200x60px
             </p>
           </div>
 
           {/* Vista previa del logo */}
           <div className="p-4 bg-white/5 rounded-lg border border-white/10">
-            <p className="text-sm text-gray-400 mb-3">Vista Previa:</p>
-            <div className="bg-white/10 p-6 rounded-lg flex items-center justify-center">
-              {design.logo ? (
-                <img
-                  src={design.logo}
-                  alt="Logo preview"
-                  className="max-h-16 max-w-full object-contain"
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x60?text=Logo';
-                  }}
-                />
-              ) : (
-                <p className="text-gray-500 text-sm">Sin logo</p>
-              )}
+            <p className="text-sm text-gray-400 mb-3">Vista Previa del Logo:</p>
+            <div className="grid grid-cols-2 gap-4">
+              {/* Fondo claro */}
+              <div className="bg-white p-6 rounded-lg flex items-center justify-center min-h-[100px]">
+                {design.logo ? (
+                  <img
+                    src={design.logo}
+                    alt="Logo preview light"
+                    className="max-h-16 max-w-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x60?text=Logo';
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-400 text-sm">Sin logo</p>
+                )}
+              </div>
+              {/* Fondo oscuro */}
+              <div className="bg-black p-6 rounded-lg flex items-center justify-center min-h-[100px]">
+                {design.logo ? (
+                  <img
+                    src={design.logo}
+                    alt="Logo preview dark"
+                    className="max-h-16 max-w-full object-contain"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x60?text=Logo';
+                    }}
+                  />
+                ) : (
+                  <p className="text-gray-500 text-sm">Sin logo</p>
+                )}
+              </div>
             </div>
+            <p className="text-xs text-gray-500 mt-2 text-center">
+              Izquierda: fondo claro | Derecha: fondo oscuro
+            </p>
           </div>
         </div>
       </div>
@@ -566,34 +590,47 @@ function DesignTab({ content, updateDesign, onSave }: any) {
       <div className="admin-card p-6">
         <h3 className="text-lg font-semibold text-white mb-6 flex items-center gap-2">
           <Type className="w-5 h-5 text-brand" />
-          Tipografia
+          Tipografía del Sitio
         </h3>
         <div className="space-y-4">
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Fuente Principal</label>
+            <label className="block text-sm text-gray-400 mb-2">
+              Fuente Principal (Aplica a todo el sitio)
+            </label>
             <select
               value={design.fontFamily}
               onChange={(e) => setDesign({ ...design, fontFamily: e.target.value })}
-              className="admin-input w-full"
+              className="admin-input w-full text-lg"
+              style={{ fontFamily: design.fontFamily }}
             >
               {fontOptions.map(font => (
-                <option key={font.value} value={font.value}>
+                <option key={font.value} value={font.value} style={{ fontFamily: font.value }}>
                   {font.label}
                 </option>
               ))}
             </select>
+            <p className="text-xs text-gray-500 mt-1">
+              💡 La fuente seleccionada se aplicará inmediatamente al guardar
+            </p>
           </div>
 
           {/* Vista previa de la fuente */}
           <div className="p-4 bg-white/5 rounded-lg border border-white/10">
-            <p className="text-sm text-gray-400 mb-3">Vista Previa:</p>
-            <div className="space-y-2">
-              <p className="text-2xl text-white" style={{ fontFamily: design.fontFamily }}>
+            <p className="text-sm text-gray-400 mb-3">Vista Previa de "{design.fontFamily}":</p>
+            <div className="space-y-3 bg-gradient-to-br from-white/5 to-white/10 p-6 rounded-lg">
+              <p className="text-3xl font-bold text-white" style={{ fontFamily: design.fontFamily }}>
                 DMC Projects
               </p>
-              <p className="text-base text-gray-400" style={{ fontFamily: design.fontFamily }}>
+              <p className="text-xl text-white" style={{ fontFamily: design.fontFamily }}>
                 Conectamos sistemas de salud e imprimimos tu identidad
               </p>
+              <p className="text-base text-gray-300" style={{ fontFamily: design.fontFamily }}>
+                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Fuente aplicada a todo el contenido del sitio web.
+              </p>
+              <div className="flex gap-2 text-sm" style={{ fontFamily: design.fontFamily }}>
+                <span className="px-3 py-1 bg-brand text-white rounded">Botón</span>
+                <span className="text-gray-400">Números: 0123456789</span>
+              </div>
             </div>
           </div>
         </div>
@@ -819,14 +856,44 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
           </div>
 
           <div>
-            <label className="block text-sm text-gray-400 mb-2">Imagen de Fondo (URL)</label>
+            <label className="block text-sm text-gray-400 mb-2 flex items-center gap-2">
+              <Image className="w-4 h-4" />
+              Imagen de Fondo (URL)
+            </label>
             <input
               type="url"
               value={welcome.backgroundImage}
               onChange={(e) => setWelcome({ ...welcome, backgroundImage: e.target.value })}
               className="admin-input w-full"
-              placeholder="https://..."
+              placeholder="https://images.unsplash.com/..."
             />
+            <p className="text-xs text-gray-500 mt-1">
+              Recomendado: Imagen panorámica 1920x1080 de Unsplash o similar
+            </p>
+
+            {/* Vista previa del fondo */}
+            <div className="mt-3 p-4 bg-white/5 rounded-lg border border-white/10">
+              <p className="text-sm text-gray-400 mb-3">Vista Previa del Fondo:</p>
+              <div className="aspect-video rounded-lg overflow-hidden bg-black/20">
+                {welcome.backgroundImage ? (
+                  <img
+                    src={welcome.backgroundImage}
+                    alt="Background preview"
+                    className="w-full h-full object-cover"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80';
+                    }}
+                  />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-500">
+                    <div className="text-center">
+                      <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">Sin imagen de fondo</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
           </div>
         </div>
       </div>
