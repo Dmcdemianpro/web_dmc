@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { Heart, Shirt, ArrowRight, Building2 } from "lucide-react";
@@ -8,6 +9,20 @@ import { useContent } from "@/context/ContentContext";
 export default function WelcomePage() {
   const { content } = useContent();
   const { welcome } = content;
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  // Evitar error de hidratación mostrando un placeholder durante SSR
+  if (!mounted) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-black">
+        <div className="animate-pulse text-white">Cargando...</div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen relative overflow-hidden">
