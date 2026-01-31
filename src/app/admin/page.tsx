@@ -28,7 +28,6 @@ import {
   Palette,
   Upload,
   Type,
-  CloudUpload,
   Loader2,
   CheckCircle,
   AlertCircle,
@@ -53,7 +52,6 @@ export default function AdminPage() {
     content,
     isAuthenticated,
     isSaving,
-    isPublishing,
     hasUnsavedChanges,
     login,
     logout,
@@ -72,7 +70,6 @@ export default function AdminPage() {
     deletePortfolioItem,
     resetToDefault,
     saveToServer,
-    publishChanges,
   } = useContent();
 
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -100,15 +97,6 @@ export default function AdminPage() {
   const showSaveMessage = () => {
     setSaveMessage("Cambios guardados localmente");
     setTimeout(() => setSaveMessage(""), 3000);
-  };
-
-  const handlePublish = async () => {
-    const result = await publishChanges();
-    setPublishStatus({
-      type: result.success ? "success" : "error",
-      message: result.message,
-    });
-    setTimeout(() => setPublishStatus({ type: null, message: "" }), 5000);
   };
 
   const handleSaveToServer = async () => {
@@ -288,36 +276,22 @@ export default function AdminPage() {
               {hasUnsavedChanges && (
                 <span className="text-yellow-500 text-sm flex items-center gap-1">
                   <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
-                  Cambios sin publicar
+                  Cambios sin guardar
                 </span>
               )}
 
-              {/* Boton Guardar en Servidor */}
+              {/* Boton Guardar - Principal para VPS */}
               <button
                 onClick={handleSaveToServer}
                 disabled={isSaving}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors disabled:opacity-50"
               >
                 {isSaving ? (
                   <Loader2 size={18} className="animate-spin" />
                 ) : (
                   <Save size={18} />
                 )}
-                Guardar
-              </button>
-
-              {/* Boton Publicar */}
-              <button
-                onClick={handlePublish}
-                disabled={isPublishing || isSaving}
-                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors disabled:opacity-50"
-              >
-                {isPublishing ? (
-                  <Loader2 size={18} className="animate-spin" />
-                ) : (
-                  <CloudUpload size={18} />
-                )}
-                Publicar
+                {isSaving ? "Guardando..." : "Guardar Cambios"}
               </button>
 
               <a
