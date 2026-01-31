@@ -712,7 +712,7 @@ function DesignTab({ content, updateDesign, onSave }: any) {
                     alt="Logo preview light"
                     className="max-h-16 max-w-full object-contain"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x60?text=Logo';
+                      (e.target as HTMLImageElement).style.display = 'none';
                     }}
                   />
                 ) : (
@@ -727,7 +727,7 @@ function DesignTab({ content, updateDesign, onSave }: any) {
                     alt="Logo preview dark"
                     className="max-h-16 max-w-full object-contain"
                     onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://via.placeholder.com/200x60?text=Logo';
+                      (e.target as HTMLImageElement).style.display = 'none';
                     }}
                   />
                 ) : (
@@ -1624,13 +1624,13 @@ function GalleryTab({ content, addGalleryItem, updateGalleryItem, deleteGalleryI
               ) : (
                 /* Vista normal */
                 <>
-                  <div className="aspect-video relative">
+                  <div className="aspect-video relative bg-gray-800">
                     <img
                       src={item.url}
                       alt={item.caption}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Error+de+imagen';
+                        (e.target as HTMLImageElement).style.display = 'none';
                       }}
                     />
                     {/* Overlay con acciones */}
@@ -1902,13 +1902,13 @@ function PortfolioTab({ content, addPortfolioItem, updatePortfolioItem, deletePo
                 </div>
               ) : (
                 <>
-                  <div className="aspect-video relative">
+                  <div className="aspect-video relative bg-gray-800">
                     <img
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Error';
+                        (e.target as HTMLImageElement).style.display = 'none';
                       }}
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">
@@ -2004,13 +2004,13 @@ function PortfolioTab({ content, addPortfolioItem, updatePortfolioItem, deletePo
                 </div>
               ) : (
                 <>
-                  <div className="aspect-video relative">
+                  <div className="aspect-video relative bg-gray-800">
                     <img
                       src={item.image}
                       alt={item.title}
                       className="w-full h-full object-cover"
                       onError={(e) => {
-                        (e.target as HTMLImageElement).src = 'https://via.placeholder.com/400x300?text=Error';
+                        (e.target as HTMLImageElement).style.display = 'none';
                       }}
                     />
                     <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2">

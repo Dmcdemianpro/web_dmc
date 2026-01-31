@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { Upload, Image, Link2, Loader2, X } from "lucide-react";
+import { useState, useRef, useEffect } from "react";
+import { Upload, Image, Link2, Loader2, X, ImageOff } from "lucide-react";
 
 interface ImageUploadFieldProps {
   value: string;
@@ -27,7 +27,13 @@ export function ImageUploadField({
   const [isUploading, setIsUploading] = useState(false);
   const [uploadError, setUploadError] = useState("");
   const [mode, setMode] = useState<"url" | "upload">("url");
+  const [imageError, setImageError] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  // Reset image error when value changes
+  useEffect(() => {
+    setImageError(false);
+  }, [value]);
 
   const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -183,16 +189,21 @@ export function ImageUploadField({
         <div className="p-3 bg-white/5 rounded-lg border border-white/10">
           <p className="text-xs text-gray-400 mb-2">Vista previa:</p>
           <div className={`${aspectClasses[previewAspect]} rounded-lg overflow-hidden bg-black/30 ${previewAspect === "auto" ? "min-h-[100px]" : ""}`}>
-            {value ? (
+            {value && !imageError ? (
               <img
                 src={value}
                 alt="Preview"
                 className="w-full h-full object-contain"
-                onError={(e) => {
-                  (e.target as HTMLImageElement).src =
-                    "https://via.placeholder.com/400x300?text=Error+de+imagen";
-                }}
+                onLoad={() => setImageError(false)}
+                onError={() => setImageError(true)}
               />
+            ) : value && imageError ? (
+              <div className="w-full h-full flex items-center justify-center text-red-400 min-h-[100px]">
+                <div className="text-center">
+                  <ImageOff className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                  <p className="text-xs">Error al cargar imagen</p>
+                </div>
+              </div>
             ) : (
               <div className="w-full h-full flex items-center justify-center text-gray-500 min-h-[100px]">
                 <div className="text-center">
