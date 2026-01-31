@@ -323,35 +323,30 @@ export default function AdminPage() {
                 <DesignTab
                   content={content}
                   updateDesign={updateDesign}
-                  onSave={showSaveMessage}
                 />
               )}
               {activeTab === "welcome" && (
                 <WelcomeTab
                   content={content}
                   updateWelcome={updateWelcome}
-                  onSave={showSaveMessage}
                 />
               )}
               {activeTab === "hero" && (
                 <HeroTab
                   content={content}
                   updateHero={updateHero}
-                  onSave={showSaveMessage}
                 />
               )}
               {activeTab === "salud" && (
                 <SaludTab
                   content={content}
                   updateSaludHero={updateSaludHero}
-                  onSave={showSaveMessage}
                 />
               )}
               {activeTab === "textil" && (
                 <TextilTab
                   content={content}
                   updateTextilHero={updateTextilHero}
-                  onSave={showSaveMessage}
                 />
               )}
               {activeTab === "gallery" && (
@@ -545,7 +540,7 @@ function DashboardTab({ content }: any) {
 }
 
 // Design Tab
-function DesignTab({ content, updateDesign, onSave }: any) {
+function DesignTab({ content, updateDesign }: any) {
   const [design, setDesign] = useState(content.design || {
     logo: '/logo.png',
     fontFamily: 'Inter',
@@ -561,12 +556,11 @@ function DesignTab({ content, updateDesign, onSave }: any) {
     }
   }, [content.design]);
 
-  const handleSave = () => {
+  // Sincronizar cambios locales al contexto automáticamente
+  useEffect(() => {
     updateDesign(design);
-    onSave();
-    // Aplicar cambios inmediatamente
     applyDesignChanges(design);
-  };
+  }, [design, updateDesign]);
 
   const applyDesignChanges = (designData: any) => {
     // Aplicar fuente
@@ -615,11 +609,9 @@ function DesignTab({ content, updateDesign, onSave }: any) {
         throw new Error(data.error || 'Error al subir el archivo');
       }
 
-      // Actualizar estado local y guardar inmediatamente
+      // Actualizar estado local (se sincroniza automáticamente al contexto)
       const newDesign = { ...design, logo: data.url };
       setDesign(newDesign);
-      updateDesign(newDesign);
-      onSave();
     } catch (error: any) {
       setUploadError(error.message || 'Error al subir el archivo');
     } finally {
@@ -947,7 +939,7 @@ function DesignTab({ content, updateDesign, onSave }: any) {
 }
 
 // Welcome Tab
-function WelcomeTab({ content, updateWelcome, onSave }: any) {
+function WelcomeTab({ content, updateWelcome }: any) {
   const [welcome, setWelcome] = useState(content.welcome);
 
   // Sincronizar estado local cuando el contenido del contexto cambie
@@ -955,10 +947,10 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
     setWelcome(content.welcome);
   }, [content.welcome]);
 
-  const handleSave = () => {
+  // Sincronizar cambios locales al contexto automáticamente
+  useEffect(() => {
     updateWelcome(welcome);
-    onSave();
-  };
+  }, [welcome, updateWelcome]);
 
   const updateSaludCard = (field: string, value: string) => {
     setWelcome({
@@ -1139,7 +1131,7 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
 }
 
 // Hero Tab
-function HeroTab({ content, updateHero, onSave }: any) {
+function HeroTab({ content, updateHero }: any) {
   const [hero, setHero] = useState(content.hero);
 
   // Sincronizar estado local cuando el contenido del contexto cambie
@@ -1147,10 +1139,10 @@ function HeroTab({ content, updateHero, onSave }: any) {
     setHero(content.hero);
   }, [content.hero]);
 
-  const handleSave = () => {
+  // Sincronizar cambios locales al contexto automáticamente
+  useEffect(() => {
     updateHero(hero);
-    onSave();
-  };
+  }, [hero, updateHero]);
 
   return (
     <div className="space-y-6">
@@ -1203,7 +1195,7 @@ function HeroTab({ content, updateHero, onSave }: any) {
 }
 
 // Salud Tab
-function SaludTab({ content, updateSaludHero, onSave }: any) {
+function SaludTab({ content, updateSaludHero }: any) {
   const [hero, setHero] = useState(content.saludHero);
 
   // Sincronizar estado local cuando el contenido del contexto cambie
@@ -1211,10 +1203,10 @@ function SaludTab({ content, updateSaludHero, onSave }: any) {
     setHero(content.saludHero);
   }, [content.saludHero]);
 
-  const handleSave = () => {
+  // Sincronizar cambios locales al contexto automáticamente
+  useEffect(() => {
     updateSaludHero(hero);
-    onSave();
-  };
+  }, [hero, updateSaludHero]);
 
   return (
     <div className="space-y-6">
@@ -1267,7 +1259,7 @@ function SaludTab({ content, updateSaludHero, onSave }: any) {
 }
 
 // Textil Tab
-function TextilTab({ content, updateTextilHero, onSave }: any) {
+function TextilTab({ content, updateTextilHero }: any) {
   const [hero, setHero] = useState(content.textilHero);
 
   // Sincronizar estado local cuando el contenido del contexto cambie
@@ -1275,10 +1267,10 @@ function TextilTab({ content, updateTextilHero, onSave }: any) {
     setHero(content.textilHero);
   }, [content.textilHero]);
 
-  const handleSave = () => {
+  // Sincronizar cambios locales al contexto automáticamente
+  useEffect(() => {
     updateTextilHero(hero);
-    onSave();
-  };
+  }, [hero, updateTextilHero]);
 
   return (
     <div className="space-y-6">
