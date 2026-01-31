@@ -548,18 +548,31 @@ function DesignTab({ content, updateDesign }: any) {
     secondaryColor: '#10b981',
     accentColor: '#ff0040',
   });
+  const isFirstRender = useRef(true);
+  const lastContextValue = useRef(JSON.stringify(content.design));
 
-  // Sincronizar estado local cuando el contenido del contexto cambie
   useEffect(() => {
     if (content.design) {
-      setDesign(content.design);
+      const currentContextStr = JSON.stringify(content.design);
+      if (currentContextStr !== lastContextValue.current) {
+        lastContextValue.current = currentContextStr;
+        setDesign(content.design);
+      }
     }
   }, [content.design]);
 
-  // Sincronizar cambios locales al contexto automáticamente
   useEffect(() => {
-    updateDesign(design);
-    applyDesignChanges(design);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      applyDesignChanges(design);
+      return;
+    }
+    const designStr = JSON.stringify(design);
+    if (designStr !== lastContextValue.current) {
+      lastContextValue.current = designStr;
+      updateDesign(design);
+      applyDesignChanges(design);
+    }
   }, [design, updateDesign]);
 
   const applyDesignChanges = (designData: any) => {
@@ -941,15 +954,29 @@ function DesignTab({ content, updateDesign }: any) {
 // Welcome Tab
 function WelcomeTab({ content, updateWelcome }: any) {
   const [welcome, setWelcome] = useState(content.welcome);
+  const isFirstRender = useRef(true);
+  const lastContextValue = useRef(JSON.stringify(content.welcome));
 
-  // Sincronizar estado local cuando el contenido del contexto cambie
+  // Sincronizar estado local cuando el contenido del contexto cambie (desde el servidor)
   useEffect(() => {
-    setWelcome(content.welcome);
+    const currentContextStr = JSON.stringify(content.welcome);
+    if (currentContextStr !== lastContextValue.current) {
+      lastContextValue.current = currentContextStr;
+      setWelcome(content.welcome);
+    }
   }, [content.welcome]);
 
-  // Sincronizar cambios locales al contexto automáticamente
+  // Sincronizar cambios locales al contexto (cuando el usuario edita)
   useEffect(() => {
-    updateWelcome(welcome);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const welcomeStr = JSON.stringify(welcome);
+    if (welcomeStr !== lastContextValue.current) {
+      lastContextValue.current = welcomeStr;
+      updateWelcome(welcome);
+    }
   }, [welcome, updateWelcome]);
 
   const updateSaludCard = (field: string, value: string) => {
@@ -1133,15 +1160,27 @@ function WelcomeTab({ content, updateWelcome }: any) {
 // Hero Tab
 function HeroTab({ content, updateHero }: any) {
   const [hero, setHero] = useState(content.hero);
+  const isFirstRender = useRef(true);
+  const lastContextValue = useRef(JSON.stringify(content.hero));
 
-  // Sincronizar estado local cuando el contenido del contexto cambie
   useEffect(() => {
-    setHero(content.hero);
+    const currentContextStr = JSON.stringify(content.hero);
+    if (currentContextStr !== lastContextValue.current) {
+      lastContextValue.current = currentContextStr;
+      setHero(content.hero);
+    }
   }, [content.hero]);
 
-  // Sincronizar cambios locales al contexto automáticamente
   useEffect(() => {
-    updateHero(hero);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const heroStr = JSON.stringify(hero);
+    if (heroStr !== lastContextValue.current) {
+      lastContextValue.current = heroStr;
+      updateHero(hero);
+    }
   }, [hero, updateHero]);
 
   return (
@@ -1197,15 +1236,27 @@ function HeroTab({ content, updateHero }: any) {
 // Salud Tab
 function SaludTab({ content, updateSaludHero }: any) {
   const [hero, setHero] = useState(content.saludHero);
+  const isFirstRender = useRef(true);
+  const lastContextValue = useRef(JSON.stringify(content.saludHero));
 
-  // Sincronizar estado local cuando el contenido del contexto cambie
   useEffect(() => {
-    setHero(content.saludHero);
+    const currentContextStr = JSON.stringify(content.saludHero);
+    if (currentContextStr !== lastContextValue.current) {
+      lastContextValue.current = currentContextStr;
+      setHero(content.saludHero);
+    }
   }, [content.saludHero]);
 
-  // Sincronizar cambios locales al contexto automáticamente
   useEffect(() => {
-    updateSaludHero(hero);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const heroStr = JSON.stringify(hero);
+    if (heroStr !== lastContextValue.current) {
+      lastContextValue.current = heroStr;
+      updateSaludHero(hero);
+    }
   }, [hero, updateSaludHero]);
 
   return (
@@ -1261,15 +1312,27 @@ function SaludTab({ content, updateSaludHero }: any) {
 // Textil Tab
 function TextilTab({ content, updateTextilHero }: any) {
   const [hero, setHero] = useState(content.textilHero);
+  const isFirstRender = useRef(true);
+  const lastContextValue = useRef(JSON.stringify(content.textilHero));
 
-  // Sincronizar estado local cuando el contenido del contexto cambie
   useEffect(() => {
-    setHero(content.textilHero);
+    const currentContextStr = JSON.stringify(content.textilHero);
+    if (currentContextStr !== lastContextValue.current) {
+      lastContextValue.current = currentContextStr;
+      setHero(content.textilHero);
+    }
   }, [content.textilHero]);
 
-  // Sincronizar cambios locales al contexto automáticamente
   useEffect(() => {
-    updateTextilHero(hero);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const heroStr = JSON.stringify(hero);
+    if (heroStr !== lastContextValue.current) {
+      lastContextValue.current = heroStr;
+      updateTextilHero(hero);
+    }
   }, [hero, updateTextilHero]);
 
   return (
@@ -1325,15 +1388,27 @@ function TextilTab({ content, updateTextilHero }: any) {
 // Contact Tab
 function ContactTab({ content, updateContact }: any) {
   const [contact, setContact] = useState(content.contact);
+  const isFirstRender = useRef(true);
+  const lastContextValue = useRef(JSON.stringify(content.contact));
 
-  // Sincronizar estado local cuando el contenido del contexto cambie
   useEffect(() => {
-    setContact(content.contact);
+    const currentContextStr = JSON.stringify(content.contact);
+    if (currentContextStr !== lastContextValue.current) {
+      lastContextValue.current = currentContextStr;
+      setContact(content.contact);
+    }
   }, [content.contact]);
 
-  // Sincronizar cambios locales al contexto
   useEffect(() => {
-    updateContact(contact);
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+    const contactStr = JSON.stringify(contact);
+    if (contactStr !== lastContextValue.current) {
+      lastContextValue.current = contactStr;
+      updateContact(contact);
+    }
   }, [contact, updateContact]);
 
   return (
