@@ -282,6 +282,48 @@ interface ContentContextType {
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined)
 
+// Función para detectar URLs de placeholder rotas
+function isBrokenPlaceholderUrl(value: unknown): boolean {
+  if (typeof value !== 'string') return false
+  const lowerValue = value.toLowerCase()
+  return (
+    lowerValue.includes('placeholder.com') ||
+    lowerValue.includes('via.placeholder') ||
+    lowerValue.includes('400x300?text=') ||
+    lowerValue.includes('800x600?text=') ||
+    lowerValue.includes('placehold.co') ||
+    lowerValue.includes('placeholdit')
+  )
+}
+
+// Función recursiva para limpiar URLs de placeholder rotas del contenido
+function cleanBrokenUrls<T>(obj: T, defaultFallback: string = ''): T {
+  if (obj === null || obj === undefined) return obj
+
+  if (typeof obj === 'string') {
+    return isBrokenPlaceholderUrl(obj) ? (defaultFallback as unknown as T) : obj
+  }
+
+  if (Array.isArray(obj)) {
+    return obj.map(item => cleanBrokenUrls(item, defaultFallback)) as unknown as T
+  }
+
+  if (typeof obj === 'object') {
+    const cleaned: Record<string, unknown> = {}
+    for (const [key, value] of Object.entries(obj)) {
+      // Para campos de imagen, usar string vacío como fallback
+      if (key === 'image' || key === 'url' || key === 'backgroundImage' || key === 'logo') {
+        cleaned[key] = cleanBrokenUrls(value, '')
+      } else {
+        cleaned[key] = cleanBrokenUrls(value, defaultFallback)
+      }
+    }
+    return cleaned as T
+  }
+
+  return obj
+}
+
 export function ContentProvider({ children }: { children: ReactNode }) {
   // Inicializar con valores por defecto para evitar error de hidratación
   const [content, setContent] = useState<SiteContent>(defaultContent)
@@ -301,17 +343,20 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         const serverData = await response.json()
 
         if (serverData && !serverData.error) {
-          setContent({ ...defaultContent, ...serverData })
-          setServerContent(JSON.stringify(serverData))
+          // Limpiar URLs de placeholder rotas antes de usar el contenido
+          const cleanedData = cleanBrokenUrls(serverData)
+          setContent({ ...defaultContent, ...cleanedData })
+          setServerContent(JSON.stringify(cleanedData))
           // También actualizar localStorage para consistencia local
-          localStorage.setItem('dmcContent', JSON.stringify(serverData))
+          localStorage.setItem('dmcContent', JSON.stringify(cleanedData))
         } else {
           // Si no hay datos en servidor, cargar desde localStorage
           const savedContent = localStorage.getItem('dmcContent')
           if (savedContent) {
             try {
               const parsed = JSON.parse(savedContent)
-              setContent({ ...defaultContent, ...parsed })
+              const cleanedData = cleanBrokenUrls(parsed)
+              setContent({ ...defaultContent, ...cleanedData })
             } catch (e) {
               console.error('Error parsing saved content:', e)
             }
@@ -323,7 +368,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
         if (savedContent) {
           try {
             const parsed = JSON.parse(savedContent)
-            setContent({ ...defaultContent, ...parsed })
+            const cleanedData = cleanBrokenUrls(parsed)
+            setContent({ ...defaultContent, ...cleanedData })
           } catch (e) {
             console.error('Error parsing saved content:', e)
           }
