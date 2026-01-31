@@ -6,6 +6,7 @@ import { motion } from "framer-motion";
 import { Heart, Home, Phone, Menu, X, MessageCircle } from "lucide-react";
 import { useState, useEffect } from "react";
 import { getWhatsAppLink, CONTACT_INFO } from "@/lib/utils";
+import { useContent } from "@/context/ContentContext";
 
 const navLinks = [
   { href: "/salud", label: "Inicio" },
@@ -20,6 +21,7 @@ export default function SaludLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const { content } = useContent();
   const pathname = usePathname();
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -48,17 +50,27 @@ export default function SaludLayout({
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link href="/" className="flex items-center gap-3 group">
-              <div className="w-10 h-10 rounded-xl bg-accent-salud flex items-center justify-center transition-transform group-hover:scale-105">
-                <Heart className="w-5 h-5 text-white" />
-              </div>
-              <div>
-                <span className={`font-bold ${isScrolled ? "text-foreground" : "text-white"}`}>
-                  DMC Projects
-                </span>
-                <span className={`block text-xs ${isScrolled ? "text-accent-salud" : "text-accent-salud-light"}`}>
-                  Salud Digital
-                </span>
-              </div>
+              {content.design?.logo ? (
+                <img
+                  src={content.design.logo}
+                  alt={content.siteName || "DMC Projects"}
+                  className="h-10 w-auto max-w-[160px] object-contain"
+                />
+              ) : (
+                <>
+                  <div className="w-10 h-10 rounded-xl bg-accent-salud flex items-center justify-center transition-transform group-hover:scale-105">
+                    <Heart className="w-5 h-5 text-white" />
+                  </div>
+                  <div>
+                    <span className={`font-bold ${isScrolled ? "text-foreground" : "text-white"}`}>
+                      DMC Projects
+                    </span>
+                    <span className={`block text-xs ${isScrolled ? "text-accent-salud" : "text-accent-salud-light"}`}>
+                      Salud Digital
+                    </span>
+                  </div>
+                </>
+              )}
             </Link>
 
             {/* Desktop Nav */}
@@ -156,13 +168,23 @@ export default function SaludLayout({
             {/* Brand */}
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <div className="w-10 h-10 rounded-xl bg-accent-salud flex items-center justify-center">
-                  <Heart className="w-5 h-5 text-white" />
-                </div>
-                <div>
-                  <span className="font-bold text-foreground">DMC Projects</span>
-                  <span className="block text-xs text-accent-salud">Salud Digital</span>
-                </div>
+                {content.design?.logo ? (
+                  <img
+                    src={content.design.logo}
+                    alt={content.siteName || "DMC Projects"}
+                    className="h-10 w-auto max-w-[140px] object-contain"
+                  />
+                ) : (
+                  <>
+                    <div className="w-10 h-10 rounded-xl bg-accent-salud flex items-center justify-center">
+                      <Heart className="w-5 h-5 text-white" />
+                    </div>
+                    <div>
+                      <span className="font-bold text-foreground">DMC Projects</span>
+                      <span className="block text-xs text-accent-salud">Salud Digital</span>
+                    </div>
+                  </>
+                )}
               </div>
               <p className="text-sm text-muted-foreground">
                 Especialistas en interoperabilidad e integracion de sistemas clinicos.

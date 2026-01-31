@@ -278,30 +278,37 @@ interface ContentContextType {
 const ContentContext = createContext<ContentContextType | undefined>(undefined)
 
 export function ContentProvider({ children }: { children: ReactNode }) {
-  const [content, setContent] = useState<SiteContent>(() => {
-    if (typeof window !== 'undefined') {
-      const saved = localStorage.getItem('dmcContent')
-      if (saved) {
-        const parsed = JSON.parse(saved)
-        // Merge with default to ensure new fields exist
-        return { ...defaultContent, ...parsed }
-      }
-      return defaultContent
-    }
-    return defaultContent
-  })
+  // Inicializar con valores por defecto para evitar error de hidratación
+  const [content, setContent] = useState<SiteContent>(defaultContent)
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [isHydrated, setIsHydrated] = useState(false)
 
-  const [isAuthenticated, setIsAuthenticated] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return localStorage.getItem('dmcAdminAuth') === 'true'
-    }
-    return false
-  })
-
-  // Guardar en localStorage cuando cambie el contenido
+  // Cargar contenido y autenticación desde localStorage después del montaje
   useEffect(() => {
-    localStorage.setItem('dmcContent', JSON.stringify(content))
-  }, [content])
+    const savedContent = localStorage.getItem('dmcContent')
+    if (savedContent) {
+      try {
+        const parsed = JSON.parse(savedContent)
+        setContent({ ...defaultContent, ...parsed })
+      } catch (e) {
+        console.error('Error parsing saved content:', e)
+      }
+    }
+
+    const savedAuth = localStorage.getItem('dmcAdminAuth')
+    if (savedAuth === 'true') {
+      setIsAuthenticated(true)
+    }
+
+    setIsHydrated(true)
+  }, [])
+
+  // Guardar en localStorage cuando cambie el contenido (solo después de hidratar)
+  useEffect(() => {
+    if (isHydrated) {
+      localStorage.setItem('dmcContent', JSON.stringify(content))
+    }
+  }, [content, isHydrated])
 
   // Aplicar estilos de diseño cuando cambien
   useEffect(() => {

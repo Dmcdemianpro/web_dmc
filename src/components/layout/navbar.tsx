@@ -2,15 +2,16 @@
 
 import * as React from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Menu, X, ChevronDown } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 import { NAV_ITEMS } from "@/lib/constants";
+import { useContent } from "@/context/ContentContext";
 
 export function Navbar() {
+  const { content } = useContent();
   const [isOpen, setIsOpen] = React.useState(false);
   const [scrolled, setScrolled] = React.useState(false);
   const [activeDropdown, setActiveDropdown] = React.useState<string | null>(null);
@@ -45,13 +46,10 @@ export function Navbar() {
           <div className="flex h-16 md:h-18 items-center justify-between">
             {/* Logo */}
             <Link href="/" className="flex items-center">
-              <Image
-                src="/images/logo.png"
-                alt="DMC Projects"
-                width={160}
-                height={41}
-                className="h-8 sm:h-10 w-auto"
-                priority
+              <img
+                src={content.design?.logo || "/images/logo.png"}
+                alt={content.siteName || "DMC Projects"}
+                className="h-8 sm:h-10 w-auto max-w-[160px] object-contain"
               />
             </Link>
 

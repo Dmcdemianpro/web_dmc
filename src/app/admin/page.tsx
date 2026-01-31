@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "@/context/ContentContext";
 import {
@@ -490,6 +490,13 @@ function DesignTab({ content, updateDesign, onSave }: any) {
     accentColor: '#ff0040',
   });
 
+  // Sincronizar estado local cuando el contenido del contexto cambie
+  useEffect(() => {
+    if (content.design) {
+      setDesign(content.design);
+    }
+  }, [content.design]);
+
   const handleSave = () => {
     updateDesign(design);
     onSave();
@@ -518,6 +525,47 @@ function DesignTab({ content, updateDesign, onSave }: any) {
     { value: 'Playfair Display', label: 'Playfair Display' },
   ];
 
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState('');
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleFileUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploading(true);
+    setUploadError('');
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+
+      const response = await fetch('/api/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Error al subir el archivo');
+      }
+
+      // Actualizar estado local y guardar inmediatamente
+      const newDesign = { ...design, logo: data.url };
+      setDesign(newDesign);
+      updateDesign(newDesign);
+      onSave();
+    } catch (error: any) {
+      setUploadError(error.message || 'Error al subir el archivo');
+    } finally {
+      setIsUploading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = '';
+      }
+    }
+  };
+
   return (
     <div className="space-y-6">
       {/* Logo */}
@@ -527,18 +575,61 @@ function DesignTab({ content, updateDesign, onSave }: any) {
           Logo del Sitio
         </h3>
         <div className="space-y-4">
+          {/* Opcion 1: Subir archivo */}
           <div>
-            <label className="block text-sm text-gray-400 mb-2">URL del Logo/Ícono</label>
+            <label className="block text-sm text-gray-400 mb-2">Subir Logo desde tu PC</label>
+            <div className="flex gap-3">
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/png,image/jpeg,image/jpg,image/gif,image/webp,image/svg+xml"
+                onChange={handleFileUpload}
+                className="hidden"
+                id="logo-upload"
+              />
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                disabled={isUploading}
+                className="flex items-center gap-2 px-4 py-3 bg-brand/20 text-brand border border-brand/30 rounded-lg hover:bg-brand/30 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isUploading ? (
+                  <>
+                    <div className="w-5 h-5 border-2 border-brand border-t-transparent rounded-full animate-spin" />
+                    Subiendo...
+                  </>
+                ) : (
+                  <>
+                    <Upload className="w-5 h-5" />
+                    Seleccionar Archivo
+                  </>
+                )}
+              </button>
+              <span className="text-xs text-gray-500 flex items-center">
+                PNG, JPG, GIF, WebP, SVG (max 5MB)
+              </span>
+            </div>
+            {uploadError && (
+              <p className="text-red-500 text-sm mt-2">{uploadError}</p>
+            )}
+          </div>
+
+          {/* Separador */}
+          <div className="flex items-center gap-4">
+            <div className="flex-1 h-px bg-white/10"></div>
+            <span className="text-gray-500 text-sm">o usar URL</span>
+            <div className="flex-1 h-px bg-white/10"></div>
+          </div>
+
+          {/* Opcion 2: URL manual */}
+          <div>
+            <label className="block text-sm text-gray-400 mb-2">URL del Logo/Icono</label>
             <input
               type="url"
               value={design.logo}
               onChange={(e) => setDesign({ ...design, logo: e.target.value })}
               className="admin-input w-full"
-              placeholder="https://... o /logo.png"
+              placeholder="https://... o /uploads/logo.png"
             />
-            <p className="text-xs text-gray-500 mt-1">
-              💡 Puedes usar una URL externa o subir el logo a /public/logo.png
-            </p>
             <p className="text-xs text-gray-500 mt-1">
               Formato recomendado: PNG transparente de 200x60px
             </p>
@@ -800,6 +891,11 @@ function DesignTab({ content, updateDesign, onSave }: any) {
 function WelcomeTab({ content, updateWelcome, onSave }: any) {
   const [welcome, setWelcome] = useState(content.welcome);
 
+  // Sincronizar estado local cuando el contenido del contexto cambie
+  useEffect(() => {
+    setWelcome(content.welcome);
+  }, [content.welcome]);
+
   const handleSave = () => {
     updateWelcome(welcome);
     onSave();
@@ -1030,6 +1126,11 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
 function HeroTab({ content, updateHero, onSave }: any) {
   const [hero, setHero] = useState(content.hero);
 
+  // Sincronizar estado local cuando el contenido del contexto cambie
+  useEffect(() => {
+    setHero(content.hero);
+  }, [content.hero]);
+
   const handleSave = () => {
     updateHero(hero);
     onSave();
@@ -1093,6 +1194,11 @@ function HeroTab({ content, updateHero, onSave }: any) {
 // Salud Tab
 function SaludTab({ content, updateSaludHero, onSave }: any) {
   const [hero, setHero] = useState(content.saludHero);
+
+  // Sincronizar estado local cuando el contenido del contexto cambie
+  useEffect(() => {
+    setHero(content.saludHero);
+  }, [content.saludHero]);
 
   const handleSave = () => {
     updateSaludHero(hero);
@@ -1158,6 +1264,11 @@ function SaludTab({ content, updateSaludHero, onSave }: any) {
 function TextilTab({ content, updateTextilHero, onSave }: any) {
   const [hero, setHero] = useState(content.textilHero);
 
+  // Sincronizar estado local cuando el contenido del contexto cambie
+  useEffect(() => {
+    setHero(content.textilHero);
+  }, [content.textilHero]);
+
   const handleSave = () => {
     updateTextilHero(hero);
     onSave();
@@ -1221,6 +1332,11 @@ function TextilTab({ content, updateTextilHero, onSave }: any) {
 // Contact Tab
 function ContactTab({ content, updateContact, onSave }: any) {
   const [contact, setContact] = useState(content.contact);
+
+  // Sincronizar estado local cuando el contenido del contexto cambie
+  useEffect(() => {
+    setContact(content.contact);
+  }, [content.contact]);
 
   const handleSave = () => {
     updateContact(contact);

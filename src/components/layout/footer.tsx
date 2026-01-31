@@ -1,7 +1,9 @@
+"use client";
+
 import Link from "next/link";
-import Image from "next/image";
 import { Mail, Phone, MapPin, Instagram, Linkedin, MessageCircle } from "lucide-react";
 import { CONTACT_INFO, getWhatsAppLink } from "@/lib/utils";
+import { useContent } from "@/context/ContentContext";
 
 const footerLinks = {
   salud: {
@@ -34,6 +36,7 @@ const footerLinks = {
 };
 
 export function Footer() {
+  const { content } = useContent();
   const currentYear = new Date().getFullYear();
 
   return (
@@ -43,12 +46,10 @@ export function Footer() {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <Link href="/" className="inline-block mb-4">
-              <Image
-                src="/images/logo.png"
-                alt="DMC Projects"
-                width={140}
-                height={47}
-                className="h-12 w-auto"
+              <img
+                src={content.design?.logo || "/images/logo.png"}
+                alt={content.siteName || "DMC Projects"}
+                className="h-12 w-auto max-w-[140px] object-contain"
               />
             </Link>
             <p className="text-muted-foreground text-sm mb-6 max-w-sm">
