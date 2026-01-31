@@ -23,7 +23,6 @@ import {
   Heart,
   Shirt,
   Home,
-  Image,
   Camera,
   Palette,
   Upload,
@@ -32,6 +31,7 @@ import {
   CheckCircle,
   AlertCircle,
 } from "lucide-react";
+import { ImageUploadField } from "@/components/admin/ImageUploadField";
 
 // Tabs disponibles
 const tabs = [
@@ -1016,46 +1016,14 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
             />
           </div>
 
-          <div>
-            <label className="block text-sm text-gray-400 mb-2 flex items-center gap-2">
-              <Image className="w-4 h-4" />
-              Imagen de Fondo (URL)
-            </label>
-            <input
-              type="url"
-              value={welcome.backgroundImage}
-              onChange={(e) => setWelcome({ ...welcome, backgroundImage: e.target.value })}
-              className="admin-input w-full"
-              placeholder="https://images.unsplash.com/..."
-            />
-            <p className="text-xs text-gray-500 mt-1">
-              Recomendado: Imagen panorámica 1920x1080 de Unsplash o similar
-            </p>
-
-            {/* Vista previa del fondo */}
-            <div className="mt-3 p-4 bg-white/5 rounded-lg border border-white/10">
-              <p className="text-sm text-gray-400 mb-3">Vista Previa del Fondo:</p>
-              <div className="aspect-video rounded-lg overflow-hidden bg-black/20">
-                {welcome.backgroundImage ? (
-                  <img
-                    src={welcome.backgroundImage}
-                    alt="Background preview"
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=1920&q=80';
-                    }}
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center text-gray-500">
-                    <div className="text-center">
-                      <Image className="w-12 h-12 mx-auto mb-2 opacity-50" />
-                      <p className="text-sm">Sin imagen de fondo</p>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
+          <ImageUploadField
+            value={welcome.backgroundImage}
+            onChange={(url) => setWelcome({ ...welcome, backgroundImage: url })}
+            label="Imagen de Fondo"
+            placeholder="https://images.unsplash.com/..."
+            helpText="Recomendado: Imagen panorámica 1920x1080"
+            previewAspect="video"
+          />
         </div>
       </div>
 
@@ -1096,16 +1064,13 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
             />
           </div>
 
-          <div>
-            <label className="block text-sm text-gray-400 mb-2">Imagen (URL)</label>
-            <input
-              type="url"
-              value={welcome.saludCard.image}
-              onChange={(e) => updateSaludCard("image", e.target.value)}
-              className="admin-input w-full"
-              placeholder="https://..."
-            />
-          </div>
+          <ImageUploadField
+            value={welcome.saludCard.image}
+            onChange={(url) => updateSaludCard("image", url)}
+            label="Imagen de la Tarjeta"
+            placeholder="https://..."
+            previewAspect="video"
+          />
 
           <div>
             <label className="block text-sm text-gray-400 mb-2">Texto del Boton</label>
@@ -1156,16 +1121,13 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
             />
           </div>
 
-          <div>
-            <label className="block text-sm text-gray-400 mb-2">Imagen (URL)</label>
-            <input
-              type="url"
-              value={welcome.textilCard.image}
-              onChange={(e) => updateTextilCard("image", e.target.value)}
-              className="admin-input w-full"
-              placeholder="https://..."
-            />
-          </div>
+          <ImageUploadField
+            value={welcome.textilCard.image}
+            onChange={(url) => updateTextilCard("image", url)}
+            label="Imagen de la Tarjeta"
+            placeholder="https://..."
+            previewAspect="video"
+          />
 
           <div>
             <label className="block text-sm text-gray-400 mb-2">Texto del Boton</label>
@@ -1586,16 +1548,13 @@ function GalleryTab({ content, addGalleryItem, updateGalleryItem, deleteGalleryI
         </h3>
 
         <div className="space-y-4">
-          <div>
-            <label className="block text-sm text-gray-400 mb-2">URL de la Imagen</label>
-            <input
-              type="url"
-              value={newUrl}
-              onChange={(e) => setNewUrl(e.target.value)}
-              className="admin-input w-full"
-              placeholder="https://images.unsplash.com/..."
-            />
-          </div>
+          <ImageUploadField
+            value={newUrl}
+            onChange={setNewUrl}
+            label="Imagen de la Galeria"
+            placeholder="https://images.unsplash.com/..."
+            previewAspect="video"
+          />
 
           <div>
             <label className="block text-sm text-gray-400 mb-2">Descripcion / Caption</label>
@@ -1631,15 +1590,12 @@ function GalleryTab({ content, addGalleryItem, updateGalleryItem, deleteGalleryI
               {editingId === item.id ? (
                 /* Modo edicion */
                 <div className="p-4 space-y-3">
-                  <div>
-                    <label className="block text-xs text-gray-400 mb-1">URL</label>
-                    <input
-                      type="url"
-                      value={editUrl}
-                      onChange={(e) => setEditUrl(e.target.value)}
-                      className="admin-input w-full text-sm"
-                    />
-                  </div>
+                  <ImageUploadField
+                    value={editUrl}
+                    onChange={setEditUrl}
+                    label="Imagen"
+                    showPreview={false}
+                  />
                   <div>
                     <label className="block text-xs text-gray-400 mb-1">Caption</label>
                     <input
@@ -1857,13 +1813,12 @@ function PortfolioTab({ content, addPortfolioItem, updatePortfolioItem, deletePo
                 />
               </div>
               <div>
-                <label className="block text-sm text-gray-400 mb-2">URL Imagen *</label>
-                <input
-                  type="url"
+                <ImageUploadField
                   value={newItem.image}
-                  onChange={(e) => setNewItem({ ...newItem, image: e.target.value })}
-                  className="admin-input w-full"
+                  onChange={(url) => setNewItem({ ...newItem, image: url })}
+                  label="Imagen del Proyecto *"
                   placeholder="https://..."
+                  previewAspect="video"
                 />
               </div>
               <div>
@@ -1917,12 +1872,11 @@ function PortfolioTab({ content, addPortfolioItem, updatePortfolioItem, deletePo
                     className="admin-input w-full text-sm h-16 resize-none"
                     placeholder="Descripcion"
                   />
-                  <input
-                    type="url"
+                  <ImageUploadField
                     value={editItem.image}
-                    onChange={(e) => setEditItem({ ...editItem, image: e.target.value })}
-                    className="admin-input w-full text-sm"
-                    placeholder="URL Imagen"
+                    onChange={(url) => setEditItem({ ...editItem, image: url })}
+                    label="Imagen"
+                    showPreview={false}
                   />
                   <input
                     type="text"
@@ -2020,12 +1974,11 @@ function PortfolioTab({ content, addPortfolioItem, updatePortfolioItem, deletePo
                     className="admin-input w-full text-sm h-16 resize-none"
                     placeholder="Descripcion"
                   />
-                  <input
-                    type="url"
+                  <ImageUploadField
                     value={editItem.image}
-                    onChange={(e) => setEditItem({ ...editItem, image: e.target.value })}
-                    className="admin-input w-full text-sm"
-                    placeholder="URL Imagen"
+                    onChange={(url) => setEditItem({ ...editItem, image: url })}
+                    label="Imagen"
+                    showPreview={false}
                   />
                   <input
                     type="text"
