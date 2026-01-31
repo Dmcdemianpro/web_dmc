@@ -100,9 +100,12 @@ export function Footer() {
 
         {/* Bottom Row */}
         <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-sm text-muted-foreground">
-            &copy; {currentYear} DMC Projects. Todos los derechos reservados.
-          </p>
+          <div className="text-sm text-muted-foreground text-center sm:text-left">
+            <p>&copy; {currentYear} DMC Projects. Todos los derechos reservados.</p>
+            <p className="mt-1 text-xs">
+              Desarrollado por <span className="text-brand font-medium">DMC Projects Spa</span>
+            </p>
+          </div>
           <div className="flex items-center gap-4">
             <a
               href={getWhatsAppLink("general")}
