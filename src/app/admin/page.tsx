@@ -376,7 +376,6 @@ export default function AdminPage() {
                 <ContactTab
                   content={content}
                   updateContact={updateContact}
-                  onSave={showSaveMessage}
                 />
               )}
               {activeTab === "settings" && (
@@ -943,11 +942,6 @@ function DesignTab({ content, updateDesign, onSave }: any) {
           </button>
         </div>
       </div>
-
-      <button onClick={handleSave} className="admin-btn">
-        <Save size={18} className="inline mr-2" />
-        Guardar Cambios de Diseño
-      </button>
     </div>
   );
 }
@@ -1140,11 +1134,6 @@ function WelcomeTab({ content, updateWelcome, onSave }: any) {
           </div>
         </div>
       </div>
-
-      <button onClick={handleSave} className="admin-btn">
-        <Save size={18} className="inline mr-2" />
-        Guardar Cambios
-      </button>
     </div>
   );
 }
@@ -1207,11 +1196,6 @@ function HeroTab({ content, updateHero, onSave }: any) {
               className="admin-input w-full h-24 resize-none"
             />
           </div>
-
-          <button onClick={handleSave} className="admin-btn">
-            <Save size={18} className="inline mr-2" />
-            Guardar Cambios
-          </button>
         </div>
       </div>
     </div>
@@ -1276,11 +1260,6 @@ function SaludTab({ content, updateSaludHero, onSave }: any) {
               className="admin-input w-full h-24 resize-none"
             />
           </div>
-
-          <button onClick={handleSave} className="admin-btn">
-            <Save size={18} className="inline mr-2" />
-            Guardar Cambios
-          </button>
         </div>
       </div>
     </div>
@@ -1345,11 +1324,6 @@ function TextilTab({ content, updateTextilHero, onSave }: any) {
               className="admin-input w-full h-24 resize-none"
             />
           </div>
-
-          <button onClick={handleSave} className="admin-btn">
-            <Save size={18} className="inline mr-2" />
-            Guardar Cambios
-          </button>
         </div>
       </div>
     </div>
@@ -1357,7 +1331,7 @@ function TextilTab({ content, updateTextilHero, onSave }: any) {
 }
 
 // Contact Tab
-function ContactTab({ content, updateContact, onSave }: any) {
+function ContactTab({ content, updateContact }: any) {
   const [contact, setContact] = useState(content.contact);
 
   // Sincronizar estado local cuando el contenido del contexto cambie
@@ -1365,10 +1339,10 @@ function ContactTab({ content, updateContact, onSave }: any) {
     setContact(content.contact);
   }, [content.contact]);
 
-  const handleSave = () => {
+  // Sincronizar cambios locales al contexto
+  useEffect(() => {
     updateContact(contact);
-    onSave();
-  };
+  }, [contact, updateContact]);
 
   return (
     <div className="space-y-6">
@@ -1461,11 +1435,6 @@ function ContactTab({ content, updateContact, onSave }: any) {
             />
           </div>
         </div>
-
-        <button onClick={handleSave} className="admin-btn mt-6">
-          <Save size={18} className="inline mr-2" />
-          Guardar Cambios
-        </button>
       </div>
     </div>
   );
