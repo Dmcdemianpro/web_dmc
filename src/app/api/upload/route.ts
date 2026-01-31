@@ -52,8 +52,8 @@ export async function POST(request: NextRequest) {
     const filePath = path.join(uploadsDir, fileName)
     await writeFile(filePath, buffer)
 
-    // Retornar la URL pública del archivo
-    const publicUrl = `/uploads/${fileName}`
+    // Retornar la URL pública del archivo (usando API route para servir dinámicamente)
+    const publicUrl = `/api/uploads/${fileName}`
 
     return NextResponse.json({
       success: true,
