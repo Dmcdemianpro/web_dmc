@@ -251,6 +251,9 @@ const ADMIN_CREDENTIALS = {
 interface ContentContextType {
   content: SiteContent
   isAuthenticated: boolean
+  isSaving: boolean
+  isPublishing: boolean
+  hasUnsavedChanges: boolean
   login: (username: string, password: string) => boolean
   logout: () => void
   updateContent: <K extends keyof SiteContent>(section: K, data: SiteContent[K]) => void
@@ -273,6 +276,8 @@ interface ContentContextType {
   updateGalleryItem: (id: number, data: { url?: string; caption?: string }) => void
   deleteGalleryItem: (id: number) => void
   resetToDefault: () => void
+  saveToServer: () => Promise<{ success: boolean; message: string }>
+  publishChanges: () => Promise<{ success: boolean; message: string }>
 }
 
 const ContentContext = createContext<ContentContextType | undefined>(undefined)
@@ -282,33 +287,71 @@ export function ContentProvider({ children }: { children: ReactNode }) {
   const [content, setContent] = useState<SiteContent>(defaultContent)
   const [isAuthenticated, setIsAuthenticated] = useState(false)
   const [isHydrated, setIsHydrated] = useState(false)
+  const [isSaving, setIsSaving] = useState(false)
+  const [isPublishing, setIsPublishing] = useState(false)
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false)
+  const [serverContent, setServerContent] = useState<string>('')
 
-  // Cargar contenido y autenticación desde localStorage después del montaje
+  // Cargar contenido: primero del servidor (JSON file), luego localStorage como fallback
   useEffect(() => {
-    const savedContent = localStorage.getItem('dmcContent')
-    if (savedContent) {
+    const loadContent = async () => {
       try {
-        const parsed = JSON.parse(savedContent)
-        setContent({ ...defaultContent, ...parsed })
-      } catch (e) {
-        console.error('Error parsing saved content:', e)
+        // Intentar cargar desde el servidor primero
+        const response = await fetch('/api/content')
+        const serverData = await response.json()
+
+        if (serverData && !serverData.error) {
+          setContent({ ...defaultContent, ...serverData })
+          setServerContent(JSON.stringify(serverData))
+          // También actualizar localStorage para consistencia local
+          localStorage.setItem('dmcContent', JSON.stringify(serverData))
+        } else {
+          // Si no hay datos en servidor, cargar desde localStorage
+          const savedContent = localStorage.getItem('dmcContent')
+          if (savedContent) {
+            try {
+              const parsed = JSON.parse(savedContent)
+              setContent({ ...defaultContent, ...parsed })
+            } catch (e) {
+              console.error('Error parsing saved content:', e)
+            }
+          }
+        }
+      } catch {
+        // Si falla la llamada al servidor, usar localStorage
+        const savedContent = localStorage.getItem('dmcContent')
+        if (savedContent) {
+          try {
+            const parsed = JSON.parse(savedContent)
+            setContent({ ...defaultContent, ...parsed })
+          } catch (e) {
+            console.error('Error parsing saved content:', e)
+          }
+        }
       }
+
+      const savedAuth = localStorage.getItem('dmcAdminAuth')
+      if (savedAuth === 'true') {
+        setIsAuthenticated(true)
+      }
+
+      setIsHydrated(true)
     }
 
-    const savedAuth = localStorage.getItem('dmcAdminAuth')
-    if (savedAuth === 'true') {
-      setIsAuthenticated(true)
-    }
-
-    setIsHydrated(true)
+    loadContent()
   }, [])
 
   // Guardar en localStorage cuando cambie el contenido (solo después de hidratar)
   useEffect(() => {
     if (isHydrated) {
       localStorage.setItem('dmcContent', JSON.stringify(content))
+      // Verificar si hay cambios sin guardar en el servidor
+      const currentContentStr = JSON.stringify(content)
+      if (serverContent && currentContentStr !== serverContent) {
+        setHasUnsavedChanges(true)
+      }
     }
-  }, [content, isHydrated])
+  }, [content, isHydrated, serverContent])
 
   // Aplicar estilos de diseño cuando cambien
   useEffect(() => {
@@ -444,9 +487,76 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     localStorage.setItem('dmcContent', JSON.stringify(defaultContent))
   }
 
+  // Guardar contenido en el servidor (archivo JSON)
+  const saveToServer = async (): Promise<{ success: boolean; message: string }> => {
+    setIsSaving(true)
+    try {
+      const response = await fetch('/api/content', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(content),
+      })
+
+      const data = await response.json()
+
+      if (data.success) {
+        setServerContent(JSON.stringify(content))
+        setHasUnsavedChanges(false)
+        return { success: true, message: 'Contenido guardado en el servidor' }
+      } else {
+        return { success: false, message: data.error || 'Error al guardar' }
+      }
+    } catch (error) {
+      console.error('Error saving to server:', error)
+      return { success: false, message: 'Error de conexión al guardar' }
+    } finally {
+      setIsSaving(false)
+    }
+  }
+
+  // Publicar cambios (guardar + disparar deploy)
+  const publishChanges = async (): Promise<{ success: boolean; message: string }> => {
+    setIsPublishing(true)
+    try {
+      // Primero guardar en el servidor
+      const saveResult = await saveToServer()
+      if (!saveResult.success) {
+        return saveResult
+      }
+
+      // Luego disparar el deploy
+      const deployResponse = await fetch('/api/deploy', {
+        method: 'POST',
+      })
+
+      const deployData = await deployResponse.json()
+
+      if (deployData.success) {
+        return { success: true, message: 'Cambios publicados. El sitio se actualizará en unos minutos.' }
+      } else {
+        // Si el deploy falla pero el guardado fue exitoso, informar
+        if (deployData.error === 'Deploy hook not configured') {
+          return {
+            success: true,
+            message: 'Contenido guardado. Para publicar automáticamente, configura DEPLOY_HOOK_URL en las variables de entorno.'
+          }
+        }
+        return { success: false, message: deployData.message || 'Error al publicar' }
+      }
+    } catch (error) {
+      console.error('Error publishing:', error)
+      return { success: false, message: 'Error de conexión al publicar' }
+    } finally {
+      setIsPublishing(false)
+    }
+  }
+
   const value: ContentContextType = {
     content,
     isAuthenticated,
+    isSaving,
+    isPublishing,
+    hasUnsavedChanges,
     login,
     logout,
     updateContent,
@@ -469,6 +579,8 @@ export function ContentProvider({ children }: { children: ReactNode }) {
     updateGalleryItem,
     deleteGalleryItem,
     resetToDefault,
+    saveToServer,
+    publishChanges,
   }
 
   return (

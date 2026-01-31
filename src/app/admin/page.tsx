@@ -28,6 +28,10 @@ import {
   Palette,
   Upload,
   Type,
+  CloudUpload,
+  Loader2,
+  CheckCircle,
+  AlertCircle,
 } from "lucide-react";
 
 // Tabs disponibles
@@ -48,6 +52,9 @@ export default function AdminPage() {
   const {
     content,
     isAuthenticated,
+    isSaving,
+    isPublishing,
+    hasUnsavedChanges,
     login,
     logout,
     updateContent,
@@ -64,6 +71,8 @@ export default function AdminPage() {
     updatePortfolioItem,
     deletePortfolioItem,
     resetToDefault,
+    saveToServer,
+    publishChanges,
   } = useContent();
 
   const [activeTab, setActiveTab] = useState("dashboard");
@@ -83,9 +92,32 @@ export default function AdminPage() {
     }
   };
 
+  const [publishStatus, setPublishStatus] = useState<{
+    type: "success" | "error" | "info" | null;
+    message: string;
+  }>({ type: null, message: "" });
+
   const showSaveMessage = () => {
-    setSaveMessage("Cambios guardados");
+    setSaveMessage("Cambios guardados localmente");
     setTimeout(() => setSaveMessage(""), 3000);
+  };
+
+  const handlePublish = async () => {
+    const result = await publishChanges();
+    setPublishStatus({
+      type: result.success ? "success" : "error",
+      message: result.message,
+    });
+    setTimeout(() => setPublishStatus({ type: null, message: "" }), 5000);
+  };
+
+  const handleSaveToServer = async () => {
+    const result = await saveToServer();
+    setPublishStatus({
+      type: result.success ? "success" : "error",
+      message: result.message,
+    });
+    setTimeout(() => setPublishStatus({ type: null, message: "" }), 5000);
   };
 
   const handleReset = () => {
@@ -219,6 +251,7 @@ export default function AdminPage() {
             </div>
 
             <div className="flex items-center gap-4">
+              {/* Mensajes de estado */}
               {saveMessage && (
                 <motion.span
                   initial={{ opacity: 0, x: 20 }}
@@ -229,6 +262,64 @@ export default function AdminPage() {
                   {saveMessage}
                 </motion.span>
               )}
+              {publishStatus.type && (
+                <motion.span
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0 }}
+                  className={`text-sm flex items-center gap-2 ${
+                    publishStatus.type === "success"
+                      ? "text-green-500"
+                      : publishStatus.type === "error"
+                      ? "text-red-500"
+                      : "text-yellow-500"
+                  }`}
+                >
+                  {publishStatus.type === "success" ? (
+                    <CheckCircle size={16} />
+                  ) : publishStatus.type === "error" ? (
+                    <AlertCircle size={16} />
+                  ) : null}
+                  {publishStatus.message}
+                </motion.span>
+              )}
+
+              {/* Indicador de cambios sin guardar */}
+              {hasUnsavedChanges && (
+                <span className="text-yellow-500 text-sm flex items-center gap-1">
+                  <span className="w-2 h-2 bg-yellow-500 rounded-full animate-pulse" />
+                  Cambios sin publicar
+                </span>
+              )}
+
+              {/* Boton Guardar en Servidor */}
+              <button
+                onClick={handleSaveToServer}
+                disabled={isSaving}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-white/5 text-gray-400 hover:text-white hover:bg-white/10 transition-colors disabled:opacity-50"
+              >
+                {isSaving ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <Save size={18} />
+                )}
+                Guardar
+              </button>
+
+              {/* Boton Publicar */}
+              <button
+                onClick={handlePublish}
+                disabled={isPublishing || isSaving}
+                className="flex items-center gap-2 px-4 py-2 rounded-lg bg-brand text-white hover:bg-brand-dark transition-colors disabled:opacity-50"
+              >
+                {isPublishing ? (
+                  <Loader2 size={18} className="animate-spin" />
+                ) : (
+                  <CloudUpload size={18} />
+                )}
+                Publicar
+              </button>
+
               <a
                 href="/"
                 target="_blank"
