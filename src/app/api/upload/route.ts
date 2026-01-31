@@ -37,10 +37,11 @@ export async function POST(request: NextRequest) {
     const bytes = await file.arrayBuffer()
     const buffer = Buffer.from(bytes)
 
-    // Obtener extensión original
+    // Obtener extensión original y crear nombre único
     const ext = path.extname(file.name) || '.png'
     const timestamp = Date.now()
-    const fileName = `logo-${timestamp}${ext}`
+    const randomStr = Math.random().toString(36).substring(2, 8)
+    const fileName = `img-${timestamp}-${randomStr}${ext}`
 
     // Asegurar que existe la carpeta uploads
     const uploadsDir = path.join(process.cwd(), 'public', 'uploads')
